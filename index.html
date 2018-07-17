@@ -127,7 +127,9 @@
       function initHDkey(ks) {
         if (typeof ks === "object" && ks.getAddresses === undefined) {
           ks = JSON.stringify(ks)
-        } else if (typeof ks === "string") {
+        }
+
+        if (typeof ks === "string") {
           ks = myWallet.HDkey.unserialize(decodeURIComponent(ks))
         }
 
@@ -143,6 +145,28 @@
 
         wallets[ks.type] = ks
         BNOK("initHDkey");
+      }
+
+      /**
+       * initPrivkey
+       * 
+       */
+      function initPrivkey(privKey, password, type)
+      {
+        var addr = '';
+        if (type == 'eth') {
+          addr = myWallet.pks.privkey2address(privKey)
+        } else if(type=="eos") {
+          addr = "EOS"+EVT.EvtKey.privateToPublic(privKey).substr(3)
+        } else {
+          addr = EVT.EvtKey.privateToPublic(privKey)
+        }
+        myWallet.pks.create({privKey:privKey, password:password, address:addr},(err,k)=>{
+          if (err) {
+            return BNMessage('initPrivkey', err)
+          }
+          wallets[type] = k
+        })
       }
 
       /**
