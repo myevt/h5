@@ -1,0 +1,71 @@
+<html>
+  <body>
+    <script type="text/javascript" src="js/evt.js"></script>
+    <script type="text/javascript" src="js/keythereum.js"></script>
+    <script src="js/lightwallet.js"></script>
+    <script>
+      var wallet = {};
+      var k = '5HpbBBPhVTVcXM2RLso2GPdaTDuqyRbKGr8jHA8samBJiV6fLyC';
+      var publicKey = "EVT8aAu2sKwAtkCyGYNP3DcMBLbneEYedywC4HkoNVopdEYmLXAus";
+      // EVT.EvtKey.randomPrivateKey().then(prik=>{k=prik});
+
+      // set network endpoint
+      const network = {
+          host: 'testnet1.everitoken.io', // For everiToken Aurora 1.0
+          port: 8888,                     // defaults to 8888
+          protocol: 'https'               // the TestNet of everiToken uses SSL
+      };
+
+      // get apicaller instance
+      const apiCaller = EVT({
+          // keyProvider should be string of private key (aka. wit, can generate from everiSigner)
+          // you can also pass a function that return that string (or even Promise<string> for a async function)
+          endpoint: network,
+          keyProvider: k 
+      });
+
+      var cbs = result=>console.log(result)
+
+      /**
+       * evt_getFungibleBalance
+       * @param  string publicKey [description]
+       */
+      function evt_getFungibleBalance(publicKey) {
+        apiCaller.getFungibleBalance(publicKey).then(cb_resolve).catch(cb_reject)
+      }
+
+      
+
+      function cb_resolve(result) {
+        BNMessage("", null, result)
+      }
+
+      function cb_reject(err) {
+        BNMessage("", err)
+      }
+      function BNMessage(target, error, result){
+        if (typeof result !== "string") {
+          result = JSON.stringify(result)
+        }
+        var data = {}
+        if (error) {
+          if (typeof error === "object") {
+            error = error.message
+          }
+          data = {target: target, error:1, errorMessage: error}
+        } else {
+          data = {target: target, error:0, data: result}
+        }
+        var dataStr = '';
+        Object.keys(data).forEach(function(key){
+          dataStr += key+'='+encodeURIComponent(data[key])+'&';
+        })
+        console.log(data);
+        // window.location.href = "wallet://return?" + dataStr
+      }
+    </script>
+    <h1>EVT js </h1>
+    <h2>New Wallet</h2>
+
+  </body>
+</html>

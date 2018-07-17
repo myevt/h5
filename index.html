@@ -1,0 +1,264 @@
+<html>
+  <body>
+    <script type="text/javascript" src="js/evt.js"></script>
+    <script type="text/javascript" src="js/keythereum.js"></script>
+    <script type="text/javascript" src="js/myWallet.min.js"></script>
+    <script type="text/javascript" src="js/web3.js"></script>
+    <script type="text/javascript" src="js/hooked-web3-provider.js"></script>
+    <script type="text/javascript">
+
+      var passwordProvider = function() {}
+      passwordProvider.prototype.setPwd = function(password) {
+        this.password = password;
+      }
+      passwordProvider.prototype.getPwd = function() {
+        password = this.password
+        this.password = ''
+        return password
+      }
+
+      // myWallet.HDkey.generateMnemonic() 助记词
+      // web3.eth.sendTransaction({from: '627306090abab3a6e1400e9345bc60c78a8bef57', to: "f17f52151ebef6c7334fad080c5704d77216b732", value: 10*1.0e18, gasPrice: 18000000000, gas: 50000},(err, txid)=>console.log(err,txid))
+      var web3 = new Web3();
+      var apicaller = new EVT();
+      var wallets = {};
+      var passport = new passwordProvider();
+      // 需要用到密码钱先设置用户密码 passport.setPwd('password')
+      /**
+       * 创建钱包
+       * @param  {type:"evt",seedPhrase:"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",hdPathString:"m/44'/60'/0'/0",password:"abcd1234"}
+       * @return {[type]}         [description]
+       */
+      function createHDkey(options) {
+        myWallet.HDkey.create(options,(error, ks)=>{
+          initHDkey(ks);
+          BNMessage("createHDkey", error, ks.serialize());
+        });
+      }
+
+      /**
+       * [generateMnemonic description]
+       * @return {[type]} [description]
+       */
+      function generateMnemonic()
+      {
+        var words = myWallet.HDkey.generateMnemonic()
+        BNMessage("generateMnemonic", null, words);
+      }
+
+      /**
+       * [exportMnemonic description]
+       * @param  {[type]} password [description]
+       * @param  {[type]} ksName   [description]
+       * @return {[type]}          [description]
+       */
+      function exportMnemonic(password, ksName)
+      {
+        if (typeof wallets[ksName] === undefined) {
+          throw new Error("Please initHDkey first!")
+        }
+        var ks = wallets[ksName]
+        ks.keyFromPassword(password,(err,pw)=>{
+          if (!ks.isDerivedKeyCorrect(pw)) {
+            BNMessage("exportMnemonic", "Password error")
+          } else {
+            var words = wallets[ksName].getMnemonic(pw)
+            BNMessage("exportMnemonic", null, words)
+          }
+        })
+      }
+
+      function exportKeystore(password, ksName) {
+        if (typeof wallets[ksName] === undefined) {
+          throw new Error("Please initHDkey first!")
+        }
+        if (wallets[ksName].type !== "eth") {
+          BNMessage('exportHDkey2store', "Not ETH wallet")
+        }
+        var ks = wallets[ksName]
+        ks.keyFromPassword(password,(err,pw)=>{
+            if (!ks.isDerivedKeyCorrect(pw)) {
+              BNMessage('exportHDkey2store', "Password error")
+            } else {
+              var prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
+              console.log(prik)
+              var dk = keythereum.create({ivBytes: 16 })
+              dk.privateKey = keythereum.str2buf(prik)
+              console.log(dk.privateKey)
+              var options = {
+                kdf: "pbkdf2",
+                cipher: "aes-128-ctr",
+                kdfparams: {
+                  c: 262144,
+                  dklen: 32,
+                  prf: "hmac-sha256"
+                }
+              }
+              var keyObject = keythereum.dump(password, dk.privateKey, dk.salt, dk.iv, options)
+              BNMessage("exportHDkey2store", null, keyObject)
+            }
+          })
+      }
+
+      /**
+       * [checkKeystorePw description]
+       * @param  string password [description]
+       * @param  ksobject ks       [description]
+       * @return {[type]}          [description]
+       */
+      function checkKeystorePw(password, ks)
+      {
+        if (typeof ks === "string") {
+          ks = JSON.parse(ks)
+        }
+        try {
+          keythereum.recover(password, ks)
+          BNMessage('checkKeystorePw', null, "OK")
+        } catch(e) {
+          BNMessage('checkKeystorePw', "Password error")
+        }
+      }
+
+      /**
+       * 实例化钱包
+       * @param  hdkey objcet or hdkey serialize string
+       * @return {[type]}    [description]
+       */
+      function initHDkey(ks) {
+        if (typeof ks === "object" && ks.getAddresses === undefined) {
+          ks = JSON.stringify(ks)
+        } else if (typeof ks === "string") {
+          ks = myWallet.HDkey.unserialize(decodeURIComponent(ks))
+        }
+
+        if (ks.type === undefined) {
+          throw new Error("initHDkey")
+        }
+
+        if (ks.type == 'eth') {
+          ks.passwordProvider = function(cb) {
+            cb(null,  passport.getPwd())
+          }
+        }
+
+        wallets[ks.type] = ks
+        BNOK("initHDkey");
+      }
+
+      /**
+       * [setWeb3Provider 链接eth]
+       * @param {[type]} host [description]
+       */
+      function setWeb3Provider(host) {
+        if (wallets.eth === undefined) {
+          return BNMessage("setWeb3Provider","Please initHDkey first!");
+        }
+
+        wallets.eth.passwordProvider = function(cb) {
+          cb(null, passwordProvider.getPwd())
+        }
+
+        var web3Provider = new HookedWeb3Provider({
+          host: host,
+          transaction_signer: wallets.eth
+        });
+
+        web3.setProvider(web3Provider)
+        BNOK("setWeb3Provider")
+      }
+
+      /**
+       * [setEvtProvider description] {
+    host: 'testnet1.everitoken.io',
+    port: 8888,
+    protocol: 'https'}
+       * @param {[type]} network [description]
+       */
+      function setEvtProvider(network) {
+        if (wallets.evt === undefined) {
+          return BNMessage("setEvtProvider", "Please initHDkey first!");
+        }
+        var ks = wallets.evt
+
+        apicaller.config.endpoint = network
+        apicaller.config.keyProvider = function(transaction) {
+          var password = passport.getPwd();
+          return new Promise((resolve, reject)=>{
+            ks.keyFromPassword(password,(err,pw)=>{
+              if (err || !ks.isDerivedKeyCorrect(pw)) {
+                reject("Password error")
+              } else {
+                resolve(ks.exportPrivateKey(ks.getAddresses()[0], pw))
+              }
+            })
+          })
+        }
+      }
+
+
+
+      function BNMessage(target, error, result){
+        if (typeof result !== "string") {
+          result = JSON.stringify(result)
+        }
+        var data = {}
+        if (error) {
+          if (typeof error === "object") {
+            error = error.message
+          }
+          data = {target: target, error:1, errorMessage: error}
+        } else {
+          data = {target: target, error:0, data: result}
+        }
+        var dataStr = '';
+        Object.keys(data).forEach(function(key){
+          dataStr += key+'='+encodeURIComponent(data[key])+'&';
+        })
+        console.log(data);
+        // window.location.href = "wallet://return?" + dataStr
+      }
+
+      function BNOK(target)
+      {
+        BNMessage(target, null, "OK");
+      }
+
+      /**
+       * evt_getFungibleBalance
+       * @param  string publicKey
+       */
+      function evt_getFungibleBalance(publicKey) {
+        apiCaller.getFungibleBalance(publicKey).then(result=>{BNMessage("evt_getFungibleBalance", null, result)}).catch(err=>{BNMessage("evt_getFungibleBalance", err)})
+      }
+
+      /**
+       * evt_getManagedGroups
+       * @param  string publicKey
+       */
+      function evt_getManagedGroups(publicKey) {
+        apiCaller.getManagedGroups(publicKey).then(result=>{BNMessage("evt_getManagedGroups", null, result)}).catch(err=>{BNMessage("evt_getManagedGroups", err)})
+      }
+
+      /**
+       * getCreatedDomains
+       * @param  string publicKey
+       */
+      function evt_getCreatedDomains(publicKey) {
+        apiCaller.getCreatedDomains(publicKey).then(result=>{BNMessage("evt_getCreatedDomains", null, result)}).catch(err=>{BNMessage("evt_getCreatedDomains", err)})
+      }
+
+      /**
+       * getOwnedTokens
+       * @param  string publicKey
+       */
+      function evt_getOwnedTokens(publicKey) {
+        apiCaller.getOwnedTokens(publicKey).then(result=>{BNMessage("evt_getOwnedTokens", null, result)}).catch(err=>{BNMessage("evt_getOwnedTokens", err)})
+      }
+
+      function evt_newfungible(action) {
+
+      }
+      
+    </script>
+  </body>
+</html>
