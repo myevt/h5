@@ -54,7 +54,7 @@
        */
       function exportMnemonic(password, ksName)
       {
-        if (typeof wallets[ksName] === undefined) {
+        if (typeof wallets[ksName] === "undefined") {
           throw new Error("Please initHDkey first!")
         }
         var ks = wallets[ksName]
@@ -68,36 +68,54 @@
         })
       }
 
+      
+      /**
+       * exportKeystore
+       * @param  {[type]} password [description]
+       * @param  {[type]} ksName   [description]
+       * @return {[type]}          [description]
+       */
       function exportKeystore(password, ksName) {
-        if (typeof wallets[ksName] === undefined) {
+        if (typeof wallets[ksName] === "undefined") {
           throw new Error("Please initHDkey first!")
         }
-        if (wallets[ksName].type !== "eth") {
-          BNMessage('exportHDkey2store', "Not ETH wallet")
-        }
+
         var ks = wallets[ksName]
         ks.keyFromPassword(password,(err,pw)=>{
-            if (!ks.isDerivedKeyCorrect(pw)) {
-              BNMessage('exportHDkey2store', "Password error")
+          if (!ks.isDerivedKeyCorrect(pw)) {
+            BNMessage('exportHDkey2store', "Password error")
+          } else {
+            var prik = '';
+            if (typeof ks.getAddresses === "undefined") {
+              prik = ks.exportPrivateKey(pw)
             } else {
-              var prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
-              console.log(prik)
-              var dk = keythereum.create({ivBytes: 16 })
-              dk.privateKey = keythereum.str2buf(prik)
-              console.log(dk.privateKey)
-              var options = {
-                kdf: "pbkdf2",
-                cipher: "aes-128-ctr",
-                kdfparams: {
-                  c: 262144,
-                  dklen: 32,
-                  prf: "hmac-sha256"
-                }
-              }
-              var keyObject = keythereum.dump(password, dk.privateKey, dk.salt, dk.iv, options)
-              BNMessage("exportHDkey2store", null, keyObject)
+              prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
             }
-          })
+            var dk = keythereum.create({ivBytes: 16 })
+            dk.privateKey = keythereum.str2buf(prik)
+            var options = {
+              kdf: "pbkdf2",
+              cipher: "aes-128-ctr",
+              kdfparams: {
+                c: 262144,
+                dklen: 32,
+                prf: "hmac-sha256"
+              }
+            }
+            var keyObject = keythereum.dump(password, dk.privateKey, dk.salt, dk.iv, options)
+            console.log(JSON.stringify(keyObject))
+            BNMessage("exportHDkey2store", null, keyObject)
+          }
+        })
+      }
+
+      function importKeystore(password, ks) {
+        if (typeof ks === "string") {
+          ks = JSON.parse(ks)
+        }
+        keythereum.recover(password, ks, function (privateKey) {
+          initPrivkey(web3.toHex(String.fromCharCode.apply(null, privateKey)).substr(2), password, 'eth')
+        });
       }
 
       /**
@@ -179,7 +197,7 @@
         }
 
         wallets.eth.passwordProvider = function(cb) {
-          cb(null, passwordProvider.getPwd())
+          cb(null, passport.getPwd())
         }
 
         var web3Provider = new HookedWeb3Provider({
