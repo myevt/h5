@@ -17,3 +17,10 @@
 ### 4、evt_getManagedGroups
 组列表
 [{name:"ding.org"},...]
+
+## 钱包相关
+1、私钥钱包导入
+initPrivkey(privkey, password, 'eth')
+1、 keystore
+importKeystore(password, ks)
+exportKeystore(password, ksName)
