@@ -1,98 +1,107 @@
 # EVT 混合程序
 
-## Usage
+## 公用方法
 
-### 1、evt_getFungibleBalance
-同质代币列表
+### 创建助记词钱包
 ```
-[ "99990.00 YYA", "100000.00 YYB", "10000.00000 EVT" ]
-```
-
-### 2、evt_getOwnedTokens
-非同质代币
-```
-[{domain:"ding.org", name:"token name"},...]
+createHDkey({type:"evt",seedPhrase:"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",hdPathString:"m/44'/60'/0'/0",password:"abcd1234"})
 ```
 
-### 3、evt_getCreatedDomains
-域列表
+### 生成助记词
+导入助记词从用户端获取
 ```
-[{name:"ding.org"},...]
-```
-
-### 4、evt_getManagedGroups
-组列表
-```
-[{name:"ding.org"},...]
+generateMnemonic()
 ```
 
-### 定义（创建）同质资产
+### 导出钱包助记词
 ```
-evt_newfungible(password, totalSupply, issue, manage)
-```
-usage
-```
-evt_newfungible(password, "100000.0000 TTT", "creator", "creator")
+exportMnemonic(password, ksName)
 ```
 
-### 发行同质资产
+### 实例化钱包
+#### 用于 createHDkey 创建的助记词钱包
 ```
-evt_issuefungible(password, abi)
+initHDkey(ks)
 ```
-usage
+#### 私钥钱包实例化
+用于导入的私钥钱包和kestore
 ```
-var abi={
-            "address": publicKey,
-            "number": "1.0000 EVT",
-            "memo": "memo"
-        }
-evt_issuefungible(password, abi)
+initPrivkeyWallet(ks, type)
 ```
-
-### 转移同质资产
-```
-evt_transferft(password, abi)
-```
-usage
-```
-var abi={
-            "from": publicKey,
-            "to": publicKey2,
-            "number": "10.00 YYA",
-            "memo": "memo"
-          }
-evt_transferft(password, abi)
-```
-
-## 钱包相关
-
-钱包密码检查
-```
-checkWalletPassword(password, ks)
-```
-导入私钥
-```
-exportPrivatekey(password, ksName)
-```
-### 私钥钱包
-
-导入私钥钱包
-```
-initPrivkey(privkey, password, 'eth')
-```
-实例化私钥钱包
-```
-initPrivkeyWallet(ks, type) 
-```
-
 
 ### keystore
 
-导入keystore
+#### 导入
 ```
 importKeystore(password, ks)
 ```
-导出keystore
+#### 导出实例化过的钱包
 ```
 exportKeystore(password, ksName)
+```
+
+### 私钥钱包
+导入私钥钱包
+```
+initPrivkey(privKey, password, type)
+```
+#### 导出已实例化钱包的私钥
+```
+exportPrivatekey(password, ksName)
+```
+
+### 钱包密码检查
+```
+checkWalletPassword(password, ks)
+```
+
+## EVT 功能接口
+
+### 查询类
+
+get Fungible Balances
+```
+evt_getFungibleBalance(publicKey)
+```
+
+get Managed Groups
+```
+evt_getManagedGroups(publicKey)
+```
+
+get Created Domains
+```
+evt_getCreatedDomains(publicKey)
+```
+
+get Owned Tokens
+```
+evt_getOwnedTokens(publicKey)
+```
+
+get Fungible Symbol Detail
+```
+evt_getFungibleSymbolDetail("EVT")
+```
+
+### Fungible asset
+
+创建同质资产，特殊用法 `permission_def`="creator"|"owner"
+```
+permission_def = {
+    "name": `permission_name`,
+    "threshold": `uint32`,
+    "authorizers", `authorizer_weight[]`
+}
+evt_newfungible("1231456", "100000.0000 EVT", {issue:`permission_def`,transfer::`permission_def`,manage::`permission_def`})
+```
+
+发行
+```
+evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 EVT",memo: "memo"})
+```
+
+转移
+```
+evt_transferft("abcd1234", {from: publicKey, to: publicKey2, number: "10.00 YYA", memo: "memo"})
 ```
