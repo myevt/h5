@@ -20,7 +20,7 @@
       // myWallet.HDkey.generateMnemonic() 助记词
       // web3.eth.sendTransaction({from: '627306090abab3a6e1400e9345bc60c78a8bef57', to: "f17f52151ebef6c7334fad080c5704d77216b732", value: 10*1.0e18, gasPrice: 18000000000, gas: 50000},(err, txid)=>console.log(err,txid))
       var web3 = new Web3();
-      var apicaller = new EVT();
+      var apiCaller = new EVT();
       var wallets = {};
       var passport = new passwordProvider();
       // 需要用到密码钱先设置用户密码 passport.setPwd('password')
@@ -109,6 +109,39 @@
         })
       }
 
+      /**
+       * exportPrivatekey
+       * @param  {[type]} password [description]
+       * @param  {[type]} ksName   [description]
+       * @return {[type]}          [description]
+       */
+      function exportPrivatekey(password, ksName) {
+        if (typeof wallets[ksName] === "undefined") {
+          throw new Error("Please initHDkey first!")
+        }
+
+        var ks = wallets[ksName]
+        ks.keyFromPassword(password,(err,pw)=>{
+          if (!ks.isDerivedKeyCorrect(pw)) {
+            BNMessage('exportHDkey2store', "Password error")
+          } else {
+            var prik = '';
+            if (typeof ks.getAddresses === "undefined") {
+              prik = ks.exportPrivateKey(pw)
+            } else {
+              prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
+            }
+            BNMessage("exportHDkey2store", null, prik)
+          }
+        })
+      }
+
+      /**
+       * importKeystore
+       * @param  string password
+       * @param  {[type]} ks       keystore
+       * @return {[type]}          [description]
+       */
       function importKeystore(password, ks) {
         if (typeof ks === "string") {
           ks = JSON.parse(ks)
@@ -119,7 +152,7 @@
       }
 
       /**
-       * [checkKeystorePw description]
+       * checkKeystorePw
        * @param  string password [description]
        * @param  ksobject ks       [description]
        * @return {[type]}          [description]
@@ -184,6 +217,7 @@
             return BNMessage('initPrivkey', err)
           }
           wallets[type] = k
+          BNOK("initPrivkey");
         })
       }
 
@@ -222,8 +256,8 @@
         }
         var ks = wallets.evt
 
-        apicaller.config.endpoint = network
-        apicaller.config.keyProvider = function(transaction) {
+        apiCaller.config.endpoint = network
+        apiCaller.config.keyProvider = function(transaction) {
           var password = passport.getPwd();
           return new Promise((resolve, reject)=>{
             ks.keyFromPassword(password,(err,pw)=>{
