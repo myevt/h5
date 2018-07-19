@@ -60,7 +60,7 @@
       }
 
       /**
-       * [generateMnemonic description]
+       * generateMnemonic
        * @return {[type]} [description]
        */
       function generateMnemonic()
@@ -70,9 +70,9 @@
       }
 
       /**
-       * [exportMnemonic description]
-       * @param  {[type]} password [description]
-       * @param  {[type]} ksName   [description]
+       * exportMnemonic
+       * @param  string password
+       * @param  string ksName
        * @return {[type]}          [description]
        */
       function exportMnemonic(password, ksName)
@@ -94,9 +94,8 @@
       
       /**
        * exportKeystore
-       * @param  {[type]} password [description]
-       * @param  {[type]} ksName   [description]
-       * @return {[type]}          [description]
+       * @param  string password [description]
+       * @param  string ksName   [description]
        */
       function exportKeystore(password, ksName) {
         if (typeof wallets[ksName] === "undefined") {
@@ -134,8 +133,8 @@
 
       /**
        * exportPrivatekey
-       * @param  {[type]} password [description]
-       * @param  {[type]} ksName   [description]
+       * @param  string password
+       * @param  string ksName
        * @return {[type]}          [description]
        */
       function exportPrivatekey(password, ksName) {
@@ -161,8 +160,8 @@
 
       /**
        * importKeystore
-       * @param  string password
-       * @param  {[type]} ks       keystore
+       * @param  string        password
+       * @param  string|object ks       keystore or keystore jsonstring
        * @return {[type]}          [description]
        */
       function importKeystore(password, ks) {
@@ -180,7 +179,9 @@
 
       /**
        * checkWalletPassword
-       * 
+       * @param  string password
+       * @param  string ks       wallet name
+       * @return {[type]}          [description]
        */
       function checkWalletPassword(password, ks) {
         var wallet = wallets[ks]
@@ -194,7 +195,7 @@
       }
 
       /**
-       * 实例化钱包
+       * initHDkey Mnemonic wallet
        * @param  hdkey objcet or hdkey serialize string
        * @return {[type]}    [description]
        */
@@ -223,7 +224,10 @@
 
       /**
        * initPrivkey
-       * 
+       * @param  string privKey
+       * @param  string password
+       * @param  string type     wallet name
+       * @return {[type]}          [description]
        */
       function initPrivkey(privKey, password, type)
       {
@@ -245,8 +249,10 @@
       }
 
       /**
-       * init privkey wallet
-       * 
+       * init Privkey Wallet
+       * @param  string|object ks   privkey object
+       * @param  string type   wallet name
+       * @return {[type]}      [description]
        */
       function initPrivkeyWallet(ks, type) {
         if (typeof ks === "object") {
@@ -257,8 +263,8 @@
       }
 
       /**
-       * [setWeb3Provider 链接eth]
-       * @param {[type]} host [description]
+       * set Web3js Provider
+       * @param string host eth node
        */
       function setWeb3Provider(host) {
         if (wallets.eth === undefined) {
@@ -279,11 +285,13 @@
       }
 
       /**
-       * [setEvtProvider description] {
-    host: 'testnet1.everitoken.io',
-    port: 8888,
-    protocol: 'https'}
-       * @param {[type]} network [description]
+       * setEvtProvider 
+       * 
+       * @param object network eg. {
+            host: 'testnet1.everitoken.io',
+            port: 8888,
+            protocol: 'https'
+          }
        */
       function setEvtProvider(network) {
         if (wallets.evt === undefined) {
@@ -336,7 +344,7 @@
       }
 
       /**
-       * evt_getFungibleBalance
+       * get Fungible Balances
        * @param  string publicKey
        */
       function evt_getFungibleBalance(publicKey) {
@@ -344,7 +352,7 @@
       }
 
       /**
-       * evt_getManagedGroups
+       * get Managed Groups
        * @param  string publicKey
        */
       function evt_getManagedGroups(publicKey) {
@@ -352,7 +360,7 @@
       }
 
       /**
-       * getCreatedDomains
+       * get Created Domains
        * @param  string publicKey
        */
       function evt_getCreatedDomains(publicKey) {
@@ -360,25 +368,75 @@
       }
 
       /**
-       * getOwnedTokens
+       * get Owned Tokens
        * @param  string publicKey
        */
       function evt_getOwnedTokens(publicKey) {
         apiCaller.getOwnedTokens(publicKey).then(result=>{BNMessage("evt_getOwnedTokens", null, result)}).catch(err=>{BNMessage("evt_getOwnedTokens", err)})
       }
 
+      /**
+       * get Fungible Symbol Detail
+       * @param  string symbol eg. EVT
+       * @return {[type]} 
+       */
       function evt_getFungibleSymbolDetail(symbol) {
         apiCaller.getFungibleSymbolDetail(symbol).then(result=>{BNMessage("evt_getFungibleSymbolDetail", null, result)}).catch(err=>{BNMessage("evt_getFungibleSymbolDetail", err)})
       }
 
       /**
-       * evt_issuefungible
-       * {
-            "address": publicKey,
-            "number": asset,
-            "memo": memo
+       * get Token info
+       * @param  string domain
+       * @param  string token
+       * @return {[type]}        [description]
+       */
+      function evt_getToken(domain, token) {
+        apiCaller.getToken(domain,token).then(result=>{BNMessage("evt_getToken", null, result)}).catch(err=>{BNMessage("evt_getToken", err)})
+      }
+
+      /**
+       * create newdomain
+       * @param  string password
+       * @param  string domain
+       * @param  object authorization prototype include issue,transfer,manage @see EVT permission_def
+       * @return {[type]}               [description]
+       */
+      function evt_newdomain(password, domain, authorization) {
+        passport.setPwd(password)
+        var creator = wallets.evt.getAddresses()[0]
+        var abi = {
+          "mame": domain,
+          "creator": creator
         }
-       * 
+        _authorization(authorization, abi)
+
+        apiCaller.pushTransaction(
+          new EVT.EvtAction("newdomain", abi)
+        ).then(result=>{BNMessage("evt_newdomain", null, result)}).catch(err=>{BNMessage("evt_newdomain", err)})
+      }
+
+      /**
+       * Issue Non-Fungible Tokens
+       * @param  string domain
+       * @param  array  names    list of token name
+       * @param  array  owner    list of publickey,address
+       * @return {[type]}        [description]
+       */
+      function evt_issuetoken(domain, names, owner) {
+        apiCaller.pushTransaction(
+          new EVT.EvtAction("issuetoken", {
+            "domain": domain,
+            "names": names,
+            "owner": owner
+          })
+        ).then(result=>{BNMessage("evt_issuetoken", null, result)}).catch(err=>{BNMessage("evt_issuetoken", err)})
+      }
+
+      /**
+       * issue fungible asset
+       * @param  string password
+       * @param  object abi      {"address": publicKey, "number": asset,"memo": memo}
+       * @return {[type]}          [description]
        */
       function evt_issuefungible(password, abi) {
         passport.setPwd(password)
@@ -392,15 +450,11 @@
       }
 
       /**
-       * evt_transferft
-       * {
-            "from": publicKey,
-            "to": publicKey2,
-            "number": "10.00 YYA",
-            "memo": "memo"
-          }
-       * 
-       */ 
+       * transfer fungible asset
+       * @param  string password
+       * @param  objcet abi      {"from": publicKey,"to": publicKey2,"number": "10.00 YYA","memo": "memo"}
+       * @return {[type]}          [description]
+       */
       function evt_transferft(password, abi) {
         passport.setPwd(password)
         var info = _parseAsset(abi.number)
@@ -412,31 +466,16 @@
         ).then(result=>{BNMessage("evt_transferft", null, result)}).catch(err=>{BNMessage("evt_transferft", err)})
       }
 
-      function evt_newfungible(password, totalSupply, issue, manage) {
+      /**
+       * newfungible
+       * @param  string password      [description]
+       * @param  string totalSupply   asset type eg "10000.00000 EVT"
+       * @param  objcet authorization prototype include issue,transfer,manage @see EVT permission_def
+       * @return {[type]}               [description]
+       */
+      function evt_newfungible(password, totalSupply, authorization) {
         passport.setPwd(password)
         var creator = wallets.evt.getAddresses()[0]
-        if (issue === "creator") {
-          issue = {
-                "name":"issue",
-                "threshold": 1,
-                "authorizers": [{
-                    "ref": "[A] " + creator,
-                    "weight": 1
-                }]
-            }
-        }
-
-        if (manage === "creator") {
-          manage = {
-                "name":"manage",
-                "threshold": 1,
-                "authorizers": [{
-                    "ref": "[A] " + creator,
-                    "weight": 1
-                }]
-            }
-        }
-
         var info = _parseAsset(totalSupply)
         if (!info) {
           return BNMessage("evt_newfungible", "totalSupply error")
@@ -448,16 +487,68 @@
         var abi = {
             "sym": sym,
             "creator": creator,
-            "issue": issue,
-            "manage": manage,
             "total_supply": totalSupply
         }
-        console.log(abi)
+        _authorization(authorization, abi)
+
         apiCaller.pushTransaction(new EVT.EvtAction("newfungible",abi,"fungible",info[2])).then(result=>{BNMessage("evt_newfungible", null, result)}).catch(err=>{BNMessage("evt_newfungible", err)})
       }
 
       function _parseAsset(asset) {
         return /^\d+(\.\d+)?\ (\w+)$/.exec(asset)
+      }
+
+      function _authorization(au, abi) {
+        if (typeof au !== "object") {
+          throw new Error("authorization must object")
+        }
+        // issue
+        if ("issue" in au) {
+          if (au.issue === "creator") {
+            abi.issue = {
+              "name":"issue",
+              "threshold": 1,
+              "authorizers": [{
+                "ref": "[A] " + abi.creator,
+                "weight": 1
+              }]
+            }
+          } else {
+            abi.issue = au.issue
+          }
+        }
+
+        // manage
+        if ("manage" in au) {
+          if (au.manage === "creator") {
+            abi.manage = {
+              "name":"manage",
+              "threshold": 1,
+              "authorizers": [{
+                  "ref": "[A] " + abi.creator,
+                  "weight": 1
+              }]
+            }
+          } else {
+            abi.manage = au.manage
+          }
+        }
+
+        // transfer !FT
+        if (typeof abi.sym === "undefined") {
+          if (typeof au.transfer === "undefined" || au.transfer === "owner") {
+            abi.transfer = {
+                "name": "transfer",
+                "threshold": 1,
+                "authorizers": [{
+                    "ref": "[G] OWNER",
+                    "weight": 1
+                }]
+            }
+          } else {
+            abi.transfer = au.transfer
+          }
+        }
       }
       
     </script>
