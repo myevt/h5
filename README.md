@@ -87,6 +87,7 @@ evt_getFungibleSymbolDetail("EVT")
 ### Fungible asset
 
 创建同质资产，特殊用法 `permission_def`="creator"|"owner"
+
 ```
 permission_def = {
     "name": `permission_name`,
@@ -97,11 +98,32 @@ evt_newfungible("1231456", "100000.0000 EVT", {issue:`permission_def`,transfer::
 ```
 
 发行
+
 ```
 evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 EVT",memo: "memo"})
 ```
 
 转移
+
 ```
 evt_transferft("abcd1234", {from: publicKey, to: publicKey2, number: "10.00 YYA", memo: "memo"})
+```
+
+### Non-Fungible Tokens
+
+创建域
+
+```
+permission_def = {
+    "name": `permission_name`,
+    "threshold": `uint32`,
+    "authorizers", `authorizer_weight[]`
+}
+evt_newdomain("123456", "org.ding.a", {issue:`permission_def`,transfer::`permission_def`,manage::`permission_def`})
+```
+
+发行tokens
+
+```
+evt_issuetoken("123456", "org.ding.a", ["token1","token2"], ["EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"])
 ```

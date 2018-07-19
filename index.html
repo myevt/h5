@@ -417,12 +417,14 @@
 
       /**
        * Issue Non-Fungible Tokens
+       * @param  string password
        * @param  string domain
        * @param  array  names    list of token name
        * @param  array  owner    list of publickey,address
        * @return {[type]}        [description]
        */
-      function evt_issuetoken(domain, names, owner) {
+      function evt_issuetoken(password, domain, names, owner) {
+        passport.setPwd(password)
         apiCaller.pushTransaction(
           new EVT.EvtAction("issuetoken", {
             "domain": domain,
