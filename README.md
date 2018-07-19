@@ -26,11 +26,50 @@
 [{name:"ding.org"},...]
 ```
 
+### 定义（创建）同质资产
+```
+evt_newfungible(password, totalSupply, issue, manage)
+```
+usage
+```
+evt_newfungible(password, "100000.0000 TTT", "creator", "creator")
+```
+
+### 发行同质资产
+```
+evt_issuefungible(password, abi)
+```
+usage
+```
+var abi={
+            "address": publicKey,
+            "number": "1.0000 EVT",
+            "memo": "memo"
+        }
+evt_issuefungible(password, abi)
+```
+
+### 转移同质资产
+```
+evt_transferft(password, abi)
+```
+usage
+```
+var abi={
+            "from": publicKey,
+            "to": publicKey2,
+            "number": "10.00 YYA",
+            "memo": "memo"
+          }
+evt_transferft(password, abi)
+```
+
 ## 钱包相关
 1、私钥钱包导入
 
 ```
 initPrivkey(privkey, password, 'eth')
+initPrivkeyWallet(ks, type) 
 exportPrivatekey(password, ksName)
 ```
 
