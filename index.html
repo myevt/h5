@@ -17,6 +17,29 @@
         return password
       }
 
+      var evtKeyProviders = (function(){
+        var p = function(){
+          this.keys = []
+        }
+        p.prototype.import = function(privKey, publicKey) {
+          this.keys.push({key:privKey, addr: publicKey})
+        }
+        p.prototype.export = function(curPrivKey) {
+          var k = [curPrivKey]
+          this.keys.map(_k=>{k.push(_k.key)})
+          this.keys = []
+          return k
+        }
+
+        p.prototype.addresses = function() {
+          var addrs = []
+          this.keys.map(_k=>{addrs.push(_k.addr)})
+          return addrs
+        }
+
+        return new p()
+      })()
+
       // myWallet.HDkey.generateMnemonic() 助记词
       // web3.eth.sendTransaction({from: '627306090abab3a6e1400e9345bc60c78a8bef57', to: "f17f52151ebef6c7334fad080c5704d77216b732", value: 10*1.0e18, gasPrice: 18000000000, gas: 50000},(err, txid)=>console.log(err,txid))
       var web3 = new Web3();
@@ -217,8 +240,20 @@
             return BNMessage('initPrivkey', err)
           }
           wallets[type] = k
-          BNOK("initPrivkey");
+          BNMessage('initPrivkey', null, k)
         })
+      }
+
+      /**
+       * init privkey wallet
+       * 
+       */
+      function initPrivkeyWallet(ks, type) {
+        if (typeof ks === "object") {
+          ks = JSON.stringify(ks)
+        }
+        wallets[type]=myWallet.pks.unserialize(ks)
+        BNOK("initPrivkeyWallet")
       }
 
       /**
@@ -264,7 +299,8 @@
               if (err || !ks.isDerivedKeyCorrect(pw)) {
                 reject("Password error")
               } else {
-                resolve(ks.exportPrivateKey(ks.getAddresses()[0], pw))
+                var keys = evtKeyProviders.export(ks.exportPrivateKey(ks.getAddresses()[0], pw))
+                resolve(keys)
               }
             })
           })
@@ -331,8 +367,97 @@
         apiCaller.getOwnedTokens(publicKey).then(result=>{BNMessage("evt_getOwnedTokens", null, result)}).catch(err=>{BNMessage("evt_getOwnedTokens", err)})
       }
 
-      function evt_newfungible(action) {
+      function evt_getFungibleSymbolDetail(symbol) {
+        apiCaller.getFungibleSymbolDetail(symbol).then(result=>{BNMessage("evt_getFungibleSymbolDetail", null, result)}).catch(err=>{BNMessage("evt_getFungibleSymbolDetail", err)})
+      }
 
+      /**
+       * evt_issuefungible
+       * {
+            "address": publicKey,
+            "number": asset,
+            "memo": memo
+        }
+       * 
+       */
+      function evt_issuefungible(password, abi) {
+        passport.setPwd(password)
+        var info = _parseAsset(abi.number)
+        if (!info) {
+          return BNMessage("evt_issuefungible", "asset error")
+        }
+        apiCaller.pushTransaction(
+            new EVT.EvtAction("issuefungible", abi,"fungible",info[2])
+        ).then(result=>{BNMessage("evt_issuefungible", null, result)}).catch(err=>{BNMessage("evt_issuefungible", err)})
+      }
+
+      /**
+       * evt_transferft
+       * {
+            "from": publicKey,
+            "to": publicKey2,
+            "number": "10.00 YYA",
+            "memo": "memo"
+          }
+       * 
+       */ 
+      function evt_transferft(password, abi) {
+        passport.setPwd(password)
+        var info = _parseAsset(abi.number)
+        if (!info) {
+          return BNMessage("evt_transferft", "asset error")
+        }
+        apiCaller.pushTransaction(
+          new EVT.EvtAction("transferft", abi,"fungible", info[2])
+        ).then(result=>{BNMessage("evt_transferft", null, result)}).catch(err=>{BNMessage("evt_transferft", err)})
+      }
+
+      function evt_newfungible(password, totalSupply, issue, manage) {
+        passport.setPwd(password)
+        var creator = wallets.evt.getAddresses()[0]
+        if (issue === "creator") {
+          issue = {
+                "name":"issue",
+                "threshold": 1,
+                "authorizers": [{
+                    "ref": "[A] " + creator,
+                    "weight": 1
+                }]
+            }
+        }
+
+        if (manage === "creator") {
+          manage = {
+                "name":"manage",
+                "threshold": 1,
+                "authorizers": [{
+                    "ref": "[A] " + creator,
+                    "weight": 1
+                }]
+            }
+        }
+
+        var info = _parseAsset(totalSupply)
+        if (!info) {
+          return BNMessage("evt_newfungible", "totalSupply error")
+        }
+
+        var sym = [info[1]?info[1].length-1:"0", info[2]].join(",")
+
+
+        var abi = {
+            "sym": sym,
+            "creator": creator,
+            "issue": issue,
+            "manage": manage,
+            "total_supply": totalSupply
+        }
+        console.log(abi)
+        apiCaller.pushTransaction(new EVT.EvtAction("newfungible",abi,"fungible",info[2])).then(result=>{BNMessage("evt_newfungible", null, result)}).catch(err=>{BNMessage("evt_newfungible", err)})
+      }
+
+      function _parseAsset(asset) {
+        return /^\d+(\.\d+)?\ (\w+)$/.exec(asset)
       }
       
     </script>
