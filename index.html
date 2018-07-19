@@ -169,28 +169,28 @@
         if (typeof ks === "string") {
           ks = JSON.parse(ks)
         }
-        keythereum.recover(password, ks, function (privateKey) {
-          initPrivkey(web3.toHex(String.fromCharCode.apply(null, privateKey)).substr(2), password, 'eth')
-        });
+        try {
+          keythereum.recover(password, ks, function (privateKey) {
+            initPrivkey(web3.toHex(String.fromCharCode.apply(null, privateKey)).substr(2), password, 'eth')
+          });
+        } catch(e) {
+          BNMessage("importKeystore", e)
+        }
       }
 
       /**
-       * checkKeystorePw
-       * @param  string password [description]
-       * @param  ksobject ks       [description]
-       * @return {[type]}          [description]
+       * checkWalletPassword
+       * 
        */
-      function checkKeystorePw(password, ks)
-      {
-        if (typeof ks === "string") {
-          ks = JSON.parse(ks)
-        }
-        try {
-          keythereum.recover(password, ks)
-          BNMessage('checkKeystorePw', null, "OK")
-        } catch(e) {
-          BNMessage('checkKeystorePw', "Password error")
-        }
+      function checkWalletPassword(password, ks) {
+        var wallet = wallets[ks]
+        wallet.keyFromPassword('abcd123',(err,pw)=>{
+          if(wallet.isDerivedKeyCorrect(pw)) {
+            BNOK('checkWalletPassword')
+          } else {
+            BNMessage('checkWalletPassword', "Password error")
+          }
+        })
       }
 
       /**

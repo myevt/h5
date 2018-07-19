@@ -65,18 +65,34 @@ evt_transferft(password, abi)
 ```
 
 ## 钱包相关
-1、私钥钱包导入
 
+钱包密码检查
 ```
-initPrivkey(privkey, password, 'eth')
-initPrivkeyWallet(ks, type) 
+checkWalletPassword(password, ks)
+```
+导入私钥
+```
 exportPrivatekey(password, ksName)
 ```
+### 私钥钱包
+
+导入私钥钱包
+```
+initPrivkey(privkey, password, 'eth')
+```
+实例化私钥钱包
+```
+initPrivkeyWallet(ks, type) 
+```
 
 
-2、 keystore
+### keystore
 
+导入keystore
 ```
 importKeystore(password, ks)
+```
+导出keystore
+```
 exportKeystore(password, ksName)
 ```
