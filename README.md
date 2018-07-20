@@ -124,7 +124,7 @@ permission_def = {
     "threshold": `uint32`,
     "authorizers", `authorizer_weight[]`
 }
-evt_newfungible("1231456", "100000.0000 EVT", {issue:`permission_def`,transfer::`permission_def`,manage::`permission_def`})
+evt_newfungible("1231456", "100000.0000 EVT", {issue: `permission_def`, transfer: `permission_def`,manage: `permission_def`})
 ```
 
 发行
@@ -149,7 +149,7 @@ permission_def = {
     "threshold": `uint32`,
     "authorizers", `authorizer_weight[]`
 }
-evt_newdomain("123456", "org.ding.a", {issue:`permission_def`,transfer::`permission_def`,manage::`permission_def`})
+evt_newdomain("123456", "org.ding.a", {issue: `permission_def`, manage: `permission_def`})
 
 #  domain info
 evt_getDomainDetail("org.ding.a")
