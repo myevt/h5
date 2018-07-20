@@ -233,9 +233,9 @@
       {
         var addr = '';
         if (type == 'eth') {
-          addr = myWallet.pks.privkey2address(privKey)
+          addr = "0x" + myWallet.pks.privkey2address(privKey)
         } else if(type=="eos") {
-          addr = "EOS"+EVT.EvtKey.privateToPublic(privKey).substr(3)
+          addr = "EOS" + EVT.EvtKey.privateToPublic(privKey).substr(3)
         } else {
           addr = EVT.EvtKey.privateToPublic(privKey)
         }
