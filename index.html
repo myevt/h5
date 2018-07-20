@@ -23,6 +23,7 @@
         }
         p.prototype.import = function(privKey, publicKey) {
           this.keys.push({key:privKey, addr: publicKey})
+          BNOK("evtKeyProviders.import")
         }
         p.prototype.export = function(curPrivKey) {
           var k = [curPrivKey]
@@ -34,7 +35,7 @@
         p.prototype.addresses = function() {
           var addrs = []
           this.keys.map(_k=>{addrs.push(_k.addr)})
-          return addrs
+          BNMessage("evtKeyProviders.addresses", null, addrs)
         }
 
         return new p()
@@ -373,6 +374,42 @@
         apiCaller.getFungibleSymbolDetail(symbol).then(result=>{BNMessage("evt_getFungibleSymbolDetail", null, result)}).catch(err=>{BNMessage("evt_getFungibleSymbolDetail", err)})
       }
 
+      
+      /**
+       * getGroupDetail
+       * @param  string group
+       * @return {[type]}
+       */
+       function evt_getGroupDetail(group) {
+        apiCaller.getGroupDetail(group).then(result=>{BNMessage("evt_getGroupDetail", null, result)}).catch(err=>{BNMessage("evt_getGroupDetail", err)})
+      }
+
+      /**
+       * getDomainDetail
+       * @param  {string} domain
+       * @return {[type]}
+       */
+      function evt_getDomainDetail(domain) {
+        apiCaller.getDomainDetail(domain).then(result=>{BNMessage("evt_getDomainDetail", null, result)}).catch(err=>{BNMessage("evt_getDomainDetail", err)})
+      }
+
+
+      /**
+       * add meta info
+       * @param  string password
+       * @param  objcet abi eg. {key: "mark1", value: "something", creator: "[A] EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"}
+       * @param  string domain
+       * @param  string key
+       * @return {[type]}          [description]
+       */
+      function evt_addmeta(password, abi, domain, key) {
+        passport.setPwd(password)
+        key = key || ".meta"
+        apiCaller.pushTransaction(
+          new EVT.EvtAction("addmeta", abi, domain, key)
+        ).then(result=>{BNMessage("evt_addmeta", null, result)}).catch(err=>{BNMessage("evt_addmeta", err)})
+      }
+
       /**
        * get Token info
        * @param  string domain
@@ -381,6 +418,22 @@
        */
       function evt_getToken(domain, token) {
         apiCaller.getToken(domain,token).then(result=>{BNMessage("evt_getToken", null, result)}).catch(err=>{BNMessage("evt_getToken", err)})
+      }
+
+      /**
+       * create newgroup
+       * @param  {string} password
+       * @param  {boject} group    group def
+       * @return {[type]}          [description]
+       */
+       function evt_newgroup(password, group) {
+        passport.setPwd(password)
+        apiCaller.pushTransaction(
+          new EVT.EvtAction("newgroup",{
+            name: group.name,
+            group: group
+          })
+        ).then(result=>{BNMessage("evt_newgroup", null, result)}).catch(err=>{BNMessage("evt_newgroup", err)})
       }
 
       /**

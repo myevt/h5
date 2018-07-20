@@ -57,6 +57,18 @@ checkWalletPassword(password, ks)
 
 ## EVT 功能接口
 
+### 同步多签导入器
+
+#### evtKeyProviders
+```
+# 导入
+evtKeyProviders.import(privKey, publicKey)
+
+# 导出地址
+evtKeyProviders.addresses()
+return ["EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"]
+```
+
 ### 查询类
 
 get Fungible Balances
@@ -82,6 +94,24 @@ evt_getOwnedTokens(publicKey)
 get Fungible Symbol Detail
 ```
 evt_getFungibleSymbolDetail("EVT")
+```
+
+### evt_addmeta(password, abi, domain, [key])
+
+```
+var abi = {key: "mark1", value: "something", creator: "[A] EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"}
+
+# add domain meta
+evt_addmeta("abcd1234", abi, "org.ding.a")
+
+# add token meta
+evt_addmeta("abcd1234", abi, "org.ding.a", "bighouse1101")
+
+# add fungible asset meta
+evt_addmeta("abcd1234", abi, "fungible", "CSB")
+
+# add group meta
+evt_addmeta("abcd1234", abi, "group", "csgroup1")
 ```
 
 ### Fungible asset
@@ -111,7 +141,7 @@ evt_transferft("abcd1234", {from: publicKey, to: publicKey2, number: "10.00 YYA"
 
 ### Non-Fungible Tokens
 
-创建域
+#### 创建域
 
 ```
 permission_def = {
@@ -120,9 +150,59 @@ permission_def = {
     "authorizers", `authorizer_weight[]`
 }
 evt_newdomain("123456", "org.ding.a", {issue:`permission_def`,transfer::`permission_def`,manage::`permission_def`})
+
+#  domain info
+evt_getDomainDetail("org.ding.a")
 ```
 
-发行tokens
+#### 创建组
+evt_newgroup(password, group)
+
+group example:
+```
+{
+    "name": "testgroup",
+    "key": "EVT5RsxormWcjvVBvEdQFonu5RNG4js8Zvz9pTjABLZaYxo6NNbSJ",
+    "root": {
+        "threshold": 6,
+        "weight": 0,
+        "nodes": [{
+                "threshold": 1,
+                "weight": 3,
+                "nodes": [{
+                        "key": "EVT6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV",
+                        "weight": 1
+                    }, {
+                        "key": "EVT8MGU4aKiVzqMtWi9zLpu8KuTHZWjQQrX475ycSxEkLd6aBpraX",
+                        "weight": 1
+                    }
+                ]
+            }, {
+                "key": "EVT8MGU4aKiVzqMtWi9zLpu8KuTHZWjQQrX475ycSxEkLd6aBpraX",
+                "weight": 3
+            }, {
+                "threshold": 1,
+                "weight": 3,
+                "nodes": [{
+                        "key": "EVT6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV",
+                        "weight": 1
+                    }, {
+                        "key": "EVT8MGU4aKiVzqMtWi9zLpu8KuTHZWjQQrX475ycSxEkLd6aBpraX",
+                        "weight": 1
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+evt_newgroup(password, group)
+
+# group info
+evt_getGroupDetail("testgroup")
+```
+
+#### 发行tokens
 
 ```
 evt_issuetoken("123456", "org.ding.a", ["token1","token2"], ["EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"])
