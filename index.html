@@ -105,14 +105,9 @@
         var ks = wallets[ksName]
         ks.keyFromPassword(password,(err,pw)=>{
           if (!ks.isDerivedKeyCorrect(pw)) {
-            BNMessage('exportHDkey2store', "Password error")
+            BNMessage('exportKeystore', "Password error")
           } else {
-            var prik = '';
-            if (typeof ks.getAddresses === "undefined") {
-              prik = ks.exportPrivateKey(pw)
-            } else {
-              prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
-            }
+            var prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
             var dk = keythereum.create({ivBytes: 16 })
             dk.privateKey = keythereum.str2buf(prik)
             var options = {
@@ -125,8 +120,7 @@
               }
             }
             var keyObject = keythereum.dump(password, dk.privateKey, dk.salt, dk.iv, options)
-            console.log(JSON.stringify(keyObject))
-            BNMessage("exportHDkey2store", null, keyObject)
+            BNMessage("exportKeystore", null, keyObject)
           }
         })
       }
@@ -145,15 +139,10 @@
         var ks = wallets[ksName]
         ks.keyFromPassword(password,(err,pw)=>{
           if (!ks.isDerivedKeyCorrect(pw)) {
-            BNMessage('exportHDkey2store', "Password error")
+            BNMessage('exportPrivatekey', "Password error")
           } else {
-            var prik = '';
-            if (typeof ks.getAddresses === "undefined") {
-              prik = ks.exportPrivateKey(pw)
-            } else {
-              prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
-            }
-            BNMessage("exportHDkey2store", null, prik)
+            var prik = ks.exportPrivateKey(ks.getAddresses()[0], pw)
+            BNMessage("exportPrivatekey", null, prik)
           }
         })
       }
