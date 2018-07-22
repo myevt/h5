@@ -394,7 +394,19 @@
         apiCaller.getDomainDetail(domain).then(result=>{BNMessage("evt_getDomainDetail", null, result)}).catch(err=>{BNMessage("evt_getDomainDetail", err)})
       }
 
-
+      /**
+       * evt_evt2pevt
+       * @param  string password
+       * @param  objcet abi eg. {"from": `address`, "to": `address`, "number": `asset`, "memo": `string`}
+       * @return {[type]}
+       */
+       function evt_evt2pevt(password, abi) {
+        passport.setPwd(password)
+        apiCaller.pushTransaction(
+          {maxCharge: 100000},
+          new EVT.EvtAction("evt2pevt", abi)
+        ).then(result=>{BNMessage("evt_evt2pevt", null, result)}).catch(err=>{BNMessage("evt_evt2pevt", err)})
+      }
       /**
        * add meta info
        * @param  string password
@@ -420,10 +432,6 @@
        */
       function evt_getToken(domain, token) {
         apiCaller.getToken(domain,token).then(result=>{BNMessage("evt_getToken", null, result)}).catch(err=>{BNMessage("evt_getToken", err)})
-      }
-
-      function evt_evt2pevt(password, abi) {
-        passport.setPwd(password)
       }
 
       /**

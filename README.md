@@ -114,9 +114,15 @@ evt_addmeta("abcd1234", abi, ".fungible", "CSB")
 evt_addmeta("abcd1234", abi, ".group", "csgroup1")
 ```
 
+### evt2pevt
+
+```
+evt_evt2pevt("abcd1234", {from: wallets.evt.getAddresses()[0], to: wallets.evt.getAddresses()[0], number: "1.00000 EVT", memo:""})
+```
+
 ### Fungible asset
 
-创建同质资产，特殊用法 `permission_def`="creator"|"owner"
+创建同质资产，特殊用法 issue="creator" | manage="creator" | transfer="owner"
 
 ```
 permission_def = {
