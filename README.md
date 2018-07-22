@@ -4,7 +4,7 @@
 
 ### 创建助记词钱包
 ```
-createHDkey({type:"evt",seedPhrase:"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",hdPathString:"m/44'/60'/0'/0",password:"abcd1234"})
+createHDkey({type:"evt",seedPhrase:"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",hdPathString:"m/44'/207'/0'/0",password:"abcd1234"})
 ```
 
 ### 生成助记词
@@ -108,10 +108,10 @@ evt_addmeta("abcd1234", abi, "org.ding.a")
 evt_addmeta("abcd1234", abi, "org.ding.a", "bighouse1101")
 
 # add fungible asset meta
-evt_addmeta("abcd1234", abi, "fungible", "CSB")
+evt_addmeta("abcd1234", abi, ".fungible", "CSB")
 
 # add group meta
-evt_addmeta("abcd1234", abi, "group", "csgroup1")
+evt_addmeta("abcd1234", abi, ".group", "csgroup1")
 ```
 
 ### Fungible asset
@@ -206,4 +206,27 @@ evt_getGroupDetail("testgroup")
 
 ```
 evt_issuetoken("123456", "org.ding.a", ["token1","token2"], ["EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"])
+```
+
+
+### everiPass & everiPay
+> open evtLink.html
+
+```
+evtLink(qrType, qrParams, [imgPrams])
+
+# everiPass
+evtLink("everiPass", { 
+    keyProvider: [ "5JgWJptxZENHR69oZsPSeVTXScRx7jYPMTjPTKAjW2JFnjEhoDZ", "5JgWJptxZENHR69oZsPSeVTXScRx7jYPMTjPTKAjW2JFnjEhoDZ"],
+    domainName: "testdomain",
+    tokenName: "testtoken",
+    autoDestroying: true}
+)
+
+# everiPay 1.00000 EVT
+evtLink("everiPass", {
+    keyProvider: [ "5JgWJptxZENHR69oZsPSeVTXScRx7jYPMTjPTKAjW2JFnjEhoDZ"],
+    symbol: "5,EVT",
+    maxAmount: 100000}
+)
 ```
