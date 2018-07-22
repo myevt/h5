@@ -130,14 +130,14 @@ permission_def = {
     "threshold": `uint32`,
     "authorizers", `authorizer_weight[]`
 }
-evt_newfungible("1231456", "100000.0000 EVT", {issue: `permission_def`, transfer: `permission_def`,manage: `permission_def`})
+var dataUrl = "data:image/gif;base64,R0lGODlhAwADAIAAAP///8zMzCH5BAAAAAAALAAAAAADAAMAAAIEBHIJBQA7"
+evt_newfungible("1231456", "100000.0000 EVT", {issue: `permission_def`, transfer: `permission_def`,manage: `permission_def`}, dataUrl)
 ```
 
 发行
 
 ```
-var dataUrl = "data:image/gif;base64,R0lGODlhAwADAIAAAP///8zMzCH5BAAAAAAALAAAAAADAAMAAAIEBHIJBQA7"
-evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 EVT",memo: "memo"}, dataUrl)
+evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 EVT",memo: "memo"})
 ```
 
 转移
