@@ -13,7 +13,6 @@
       }
       passwordProvider.prototype.getPwd = function() {
         password = this.password
-        // this.password = ''
         return password
       }
 
@@ -303,11 +302,14 @@
             })
           })
         }
+
+        BNOK("setEvtProvider")
       }
 
 
 
       function BNMessage(target, error, result){
+        passport.setPwd("")
         if (typeof result !== "string") {
           result = JSON.stringify(result)
         }
@@ -536,7 +538,7 @@
        * @param  objcet authorization prototype include issue,transfer,manage @see EVT permission_def
        * @return {[type]}               [description]
        */
-      function evt_newfungible(password, totalSupply, authorization) {
+      function evt_newfungible(password, totalSupply, authorization, icon) {
         passport.setPwd(password)
         var creator = wallets.evt.getAddresses()[0]
         var info = _parseAsset(totalSupply)
@@ -554,7 +556,15 @@
         }
         _authorization(authorization, abi)
 
-        apiCaller.pushTransaction({maxCharge: 100000}, new EVT.EvtAction("newfungible",abi)).then(result=>{BNMessage("evt_newfungible", null, result)}).catch(err=>{BNMessage("evt_newfungible", err)})
+        apiCaller.pushTransaction(
+          {maxCharge: 100000}, 
+          new EVT.EvtAction("newfungible",abi),
+          new EVT.EvtAction("addmeta", {
+            "key": "symbol-icon",
+            "value": icon,
+            "creator": "[A] " + creator
+          },".fungible",info[2])
+        ).then(result=>{BNMessage("evt_newfungible", null, result)}).catch(err=>{BNMessage("evt_newfungible", err)})
       }
 
       function _parseAsset(asset) {

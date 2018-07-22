@@ -136,7 +136,8 @@ evt_newfungible("1231456", "100000.0000 EVT", {issue: `permission_def`, transfer
 发行
 
 ```
-evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 EVT",memo: "memo"})
+var dataUrl = "data:image/gif;base64,R0lGODlhAwADAIAAAP///8zMzCH5BAAAAAAALAAAAAADAAMAAAIEBHIJBQA7"
+evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 EVT",memo: "memo"}, dataUrl)
 ```
 
 转移
