@@ -71,7 +71,7 @@ NEVER SHOW IT TO ANY OTHER PEOPLE</pre>
                     EVT.EvtLink.getEVTLinkQrImage(qrType, qrParams, imgPrams, 
                         (err, res) => {
                             if (err) {
-                                alert(e.message);
+                                alert(err.message);
                                 return;
                             }
                             // canvas: document.getElementById("canvas"), 

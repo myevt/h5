@@ -6,34 +6,44 @@
     <script type="text/javascript" src="js/web3.js"></script>
     <script type="text/javascript" src="js/hooked-web3-provider.js"></script>
     <script type="text/javascript">
-
-      var passwordProvider = function() {}
-      passwordProvider.prototype.setPwd = function(password) {
-        this.password = password;
-      }
-      passwordProvider.prototype.getPwd = function() {
-        password = this.password
-        return password
-      }
+      var passport = (function(){
+        var passwordProvider = function() {}
+        passwordProvider.prototype.setPwd = function(password) {
+          this.password = password;
+        }
+        passwordProvider.prototype.getPwd = function() {
+          password = this.password
+          return password
+        }
+        return new passwordProvider()
+      })()
 
       var evtKeyProviders = (function(){
         var p = function(){
-          this.keys = []
+          this.keys = {}
         }
-        p.prototype.import = function(privKey, publicKey) {
-          this.keys.push({key:privKey, addr: publicKey})
-          BNOK("evtKeyProviders.import")
+        p.prototype.import = function(privKey) {
+          if (EVT.EvtKey.isValidPrivateKey(privKey)) {
+            var publicKey = EVT.EvtKey.privateToPublic(privKey)
+            this.keys[publicKey] = privKey
+            BNOK("evtKeyProviders.import")
+          } else {
+            BNMessage("evtKeyProviders.import", "Invalid key")
+          }
+          
         }
         p.prototype.export = function(curPrivKey) {
           var k = [curPrivKey]
-          this.keys.map(_k=>{k.push(_k.key)})
-          this.keys = []
+          Object.keys(this.keys).map(pub=>{k.push(this.keys[pub])})
           return k
         }
 
         p.prototype.addresses = function() {
           var addrs = []
-          this.keys.map(_k=>{addrs.push(_k.addr)})
+          if (typeof wallets.evt !== "undefined") {
+            addrs.push(wallets.evt.getAddresses()[0])
+          }
+          Object.keys(this.keys).map(pub=>addrs.push(pub))
           BNMessage("evtKeyProviders.addresses", null, addrs)
         }
 
@@ -45,7 +55,6 @@
       var web3 = new Web3();
       var apiCaller = new EVT();
       var wallets = {};
-      var passport = new passwordProvider();
       // 需要用到密码钱先设置用户密码 passport.setPwd('password')
       /**
        * 创建钱包

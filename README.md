@@ -238,7 +238,7 @@ evtLink("everiPass", {
 )
 
 # everiPay 1.00000 EVT
-evtLink("everiPass", {
+evtLink("everiPay", {
     keyProvider: [ "5JgWJptxZENHR69oZsPSeVTXScRx7jYPMTjPTKAjW2JFnjEhoDZ"],
     symbol: "5,EVT",
     maxAmount: 100000}
