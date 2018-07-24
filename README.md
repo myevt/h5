@@ -215,6 +215,13 @@ evt_getGroupDetail("testgroup")
 evt_issuetoken("123456", "org.ding.a", ["token1","token2"], ["EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"])
 ```
 
+#### Tokens transfer(password, abi)
+
+```
+var abi = {domain: "org.ding.a", name: "token_name", to: ["address"], memo: "string"}
+evt_transfer(password, abi)
+```
+
 
 ### everiPass & everiPay
 > open evtLink.html
