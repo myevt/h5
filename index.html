@@ -532,6 +532,20 @@
       }
 
       /**
+       * transfer Token
+       * @param  string password
+       * @param  objcet abi      {domain: "org.ding.a", name: "token_name", to: ["address"], memo: "string"}
+       * @return {[type]}          [description]
+       */
+      function evt_transfer(password, abi) {
+        passport.setPwd(password)
+        apiCaller.pushTransaction(
+          {maxCharge: 100000},
+          new EVT.EvtAction("transfer", abi)
+        ).then(result=>{BNMessage("evt_transfer", null, result)}).catch(err=>{BNMessage("evt_transfer", err)})
+      }
+
+      /**
        * newfungible
        * @param  string password      [description]
        * @param  string totalSupply   asset type eg "10000.00000 EVT"
