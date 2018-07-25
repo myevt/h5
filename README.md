@@ -99,6 +99,7 @@ evt_getFungibleSymbolDetail("EVT")
 ### evt_addmeta(password, abi, domain, [key])
 
 ```
+# creator 可以传空字符串，接口自动计算
 var abi = {key: "mark1", value: "something", creator: "[A] EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"}
 
 # add domain meta
@@ -203,7 +204,11 @@ group example:
     }
 }
 
+# create group
 evt_newgroup(password, group)
+
+# update my group
+evt_updategroup(password, group)
 
 # group info
 evt_getGroupDetail("testgroup")
@@ -212,7 +217,14 @@ evt_getGroupDetail("testgroup")
 #### 发行tokens
 
 ```
+# issue
 evt_issuetoken("123456", "org.ding.a", ["token1","token2"], ["EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj"])
+
+# token info
+evt_getToken("org.ding.a", "token1")
+
+# destroy token
+evt_destroytoken("abcd1234", "org.ding.a", "token1")
 ```
 
 #### Tokens transfer(password, abi)

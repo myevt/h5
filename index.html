@@ -426,6 +426,9 @@
       function evt_addmeta(password, abi, domain, key) {
         passport.setPwd(password)
         key = key || ".meta"
+        if (abi.creator === "") {
+          abi.creator = "[A] " + wallets.evt.getAddresses()[0]
+        }
         _evtPushTransaction("evt_addmeta", [new EVT.EvtAction("addmeta", abi, domain, key)])
       }
 
@@ -439,6 +442,11 @@
         apiCaller.getToken(domain,token).then(function(result){BNMessage("evt_getToken", null, result)}).catch(function(err){BNMessage("evt_getToken", err)})
       }
 
+      function evt_destroytoken(password, domain, token) {
+        passport.setPwd(password)
+        _evtPushTransaction("evt_destroytoken", [new EVT.EvtAction("destroytoken", {domain: domain,name: token})])
+      }
+
       /**
        * create newgroup
        * @param  {string} password
@@ -448,6 +456,17 @@
        function evt_newgroup(password, group) {
         passport.setPwd(password)
         _evtPushTransaction("evt_newgroup", [new EVT.EvtAction("newgroup",{name: group.name, group: group})])
+      }
+
+      /**
+       * update group
+       * @param  {string} password
+       * @param  {boject} group    group def
+       * @return {[type]}          [description]
+       */
+       function evt_updategroup(password, group) {
+        passport.setPwd(password)
+        _evtPushTransaction("evt_updategroup", [new EVT.EvtAction("updategroup",{name: group.name, group: group})])
       }
 
       /**
@@ -557,6 +576,10 @@
           }, ".fungible", info[2]))
 
         _evtPushTransaction("evt_newfungible", actions)
+      }
+
+      function evt_updfungible(password) {
+        passport.setPwd(password)
       }
 
       function _parseAsset(asset) {
