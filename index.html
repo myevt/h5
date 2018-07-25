@@ -33,8 +33,8 @@
           
         }
         p.prototype.export = function(curPrivKey) {
-          var k = [curPrivKey]
-          Object.keys(this.keys).map(pub=>{k.push(this.keys[pub])})
+          var k = [curPrivKey], keys = this.keys
+          Object.keys(keys).map(function(pub){k.push(keys[pub])})
           return k
         }
 
@@ -43,7 +43,7 @@
           if (typeof wallets.evt !== "undefined") {
             addrs.push(wallets.evt.getAddresses()[0])
           }
-          Object.keys(this.keys).map(pub=>addrs.push(pub))
+          Object.keys(this.keys).map(function(pub){addrs.push(pub)})
           BNMessage("evtKeyProviders.addresses", null, addrs)
         }
 
@@ -62,7 +62,7 @@
        * @return {[type]}         [description]
        */
       function createHDkey(options) {
-        myWallet.HDkey.create(options,(error, ks)=>{
+        myWallet.HDkey.create(options,function(error, ks){
           initHDkey(ks);
           BNMessage("createHDkey", error, ks.serialize());
         });
@@ -90,7 +90,7 @@
           throw new Error("Please initHDkey first!")
         }
         var ks = wallets[ksName]
-        ks.keyFromPassword(password,(err,pw)=>{
+        ks.keyFromPassword(password,function(err,pw){
           if (!ks.isDerivedKeyCorrect(pw)) {
             BNMessage("exportMnemonic", "Password error")
           } else {
@@ -112,7 +112,7 @@
         }
 
         var ks = wallets[ksName]
-        ks.keyFromPassword(password,(err,pw)=>{
+        ks.keyFromPassword(password,function(err,pw){
           if (!ks.isDerivedKeyCorrect(pw)) {
             BNMessage('exportKeystore', "Password error")
           } else {
@@ -146,7 +146,7 @@
         }
 
         var ks = wallets[ksName]
-        ks.keyFromPassword(password,(err,pw)=>{
+        ks.keyFromPassword(password,function(err,pw){
           if (!ks.isDerivedKeyCorrect(pw)) {
             BNMessage('exportPrivatekey', "Password error")
           } else {
@@ -183,7 +183,7 @@
        */
       function checkWalletPassword(password, ks) {
         var wallet = wallets[ks]
-        wallet.keyFromPassword(password,(err,pw)=>{
+        wallet.keyFromPassword(password,function(err,pw){
           if(wallet.isDerivedKeyCorrect(pw)) {
             BNOK('checkWalletPassword')
           } else {
@@ -237,7 +237,7 @@
         } else {
           addr = EVT.EvtKey.privateToPublic(privKey)
         }
-        myWallet.pks.create({privKey:privKey, password:password, address:addr},(err,k)=>{
+        myWallet.pks.create({privKey:privKey, password:password, address:addr},function(err,k){
           if (err) {
             return BNMessage('initPrivkey', err)
           }
@@ -300,8 +300,8 @@
         apiCaller.config.endpoint = network
         apiCaller.config.keyProvider = function(transaction) {
           var password = passport.getPwd();
-          return new Promise((resolve, reject)=>{
-            ks.keyFromPassword(password,(err,pw)=>{
+          return new Promise(function(resolve, reject){
+            ks.keyFromPassword(password,function(err,pw){
               if (err || !ks.isDerivedKeyCorrect(pw)) {
                 reject("Password error")
               } else {
@@ -350,7 +350,7 @@
        * @param  string publicKey
        */
       function evt_getFungibleBalance(publicKey) {
-        apiCaller.getFungibleBalance(publicKey).then(result=>{BNMessage("evt_getFungibleBalance", null, result)}).catch(err=>{BNMessage("evt_getFungibleBalance", err)})
+        apiCaller.getFungibleBalance(publicKey).then(function(result){BNMessage("evt_getFungibleBalance", null, result)}).catch(function(err){BNMessage("evt_getFungibleBalance", err)})
       }
 
       /**
@@ -358,7 +358,7 @@
        * @param  string publicKey
        */
       function evt_getManagedGroups(publicKey) {
-        apiCaller.getManagedGroups(publicKey).then(result=>{BNMessage("evt_getManagedGroups", null, result)}).catch(err=>{BNMessage("evt_getManagedGroups", err)})
+        apiCaller.getManagedGroups(publicKey).then(function(result){BNMessage("evt_getManagedGroups", null, result)}).catch(function(err){BNMessage("evt_getManagedGroups", err)})
       }
 
       /**
@@ -366,7 +366,7 @@
        * @param  string publicKey
        */
       function evt_getCreatedDomains(publicKey) {
-        apiCaller.getCreatedDomains(publicKey).then(result=>{BNMessage("evt_getCreatedDomains", null, result)}).catch(err=>{BNMessage("evt_getCreatedDomains", err)})
+        apiCaller.getCreatedDomains(publicKey).then(function(result){BNMessage("evt_getCreatedDomains", null, result)}).catch(function(err){BNMessage("evt_getCreatedDomains", err)})
       }
 
       /**
@@ -374,7 +374,7 @@
        * @param  string publicKey
        */
       function evt_getOwnedTokens(publicKey) {
-        apiCaller.getOwnedTokens(publicKey).then(result=>{BNMessage("evt_getOwnedTokens", null, result)}).catch(err=>{BNMessage("evt_getOwnedTokens", err)})
+        apiCaller.getOwnedTokens(publicKey).then(function(result){BNMessage("evt_getOwnedTokens", null, result)}).catch(function(err){BNMessage("evt_getOwnedTokens", err)})
       }
 
       /**
@@ -383,7 +383,7 @@
        * @return {[type]} 
        */
       function evt_getFungibleSymbolDetail(symbol) {
-        apiCaller.getFungibleSymbolDetail(symbol).then(result=>{BNMessage("evt_getFungibleSymbolDetail", null, result)}).catch(err=>{BNMessage("evt_getFungibleSymbolDetail", err)})
+        apiCaller.getFungibleSymbolDetail(symbol).then(function(result){BNMessage("evt_getFungibleSymbolDetail", null, result)}).catch(function(err){BNMessage("evt_getFungibleSymbolDetail", err)})
       }
 
       
@@ -393,7 +393,7 @@
        * @return {[type]}
        */
        function evt_getGroupDetail(group) {
-        apiCaller.getGroupDetail(group).then(result=>{BNMessage("evt_getGroupDetail", null, result)}).catch(err=>{BNMessage("evt_getGroupDetail", err)})
+        apiCaller.getGroupDetail(group).then(function(result){BNMessage("evt_getGroupDetail", null, result)}).catch(function(err){BNMessage("evt_getGroupDetail", err)})
       }
 
       /**
@@ -402,7 +402,7 @@
        * @return {[type]}
        */
       function evt_getDomainDetail(domain) {
-        apiCaller.getDomainDetail(domain).then(result=>{BNMessage("evt_getDomainDetail", null, result)}).catch(err=>{BNMessage("evt_getDomainDetail", err)})
+        apiCaller.getDomainDetail(domain).then(function(result){BNMessage("evt_getDomainDetail", null, result)}).catch(function(err){BNMessage("evt_getDomainDetail", err)})
       }
 
       /**
@@ -416,7 +416,7 @@
         apiCaller.pushTransaction(
           {maxCharge: 100000},
           new EVT.EvtAction("evt2pevt", abi)
-        ).then(result=>{BNMessage("evt_evt2pevt", null, result)}).catch(err=>{BNMessage("evt_evt2pevt", err)})
+        ).then(function(result){BNMessage("evt_evt2pevt", null, result)}).catch(function(err){BNMessage("evt_evt2pevt", err)})
       }
       /**
        * add meta info
@@ -432,7 +432,7 @@
         apiCaller.pushTransaction(
           {maxCharge: 100000},
           new EVT.EvtAction("addmeta", abi, domain, key)
-        ).then(result=>{BNMessage("evt_addmeta", null, result)}).catch(err=>{BNMessage("evt_addmeta", err)})
+        ).then(function(result){BNMessage("evt_addmeta", null, result)}).catch(function(err){BNMessage("evt_addmeta", err)})
       }
 
       /**
@@ -442,7 +442,7 @@
        * @return {[type]}        [description]
        */
       function evt_getToken(domain, token) {
-        apiCaller.getToken(domain,token).then(result=>{BNMessage("evt_getToken", null, result)}).catch(err=>{BNMessage("evt_getToken", err)})
+        apiCaller.getToken(domain,token).then(function(result){BNMessage("evt_getToken", null, result)}).catch(function(err){BNMessage("evt_getToken", err)})
       }
 
       /**
@@ -459,7 +459,7 @@
             name: group.name,
             group: group
           })
-        ).then(result=>{BNMessage("evt_newgroup", null, result)}).catch(err=>{BNMessage("evt_newgroup", err)})
+        ).then(function(result){BNMessage("evt_newgroup", null, result)}).catch(function(err){BNMessage("evt_newgroup", err)})
       }
 
       /**
@@ -481,7 +481,7 @@
         apiCaller.pushTransaction(
           {maxCharge: 100000},
           new EVT.EvtAction("newdomain", abi)
-        ).then(result=>{BNMessage("evt_newdomain", null, result)}).catch(err=>{BNMessage("evt_newdomain", err)})
+        ).then(function(result){BNMessage("evt_newdomain", null, result)}).catch(function(err){BNMessage("evt_newdomain", err)})
       }
 
       /**
@@ -501,7 +501,7 @@
             "names": names,
             "owner": owner
           })
-        ).then(result=>{BNMessage("evt_issuetoken", null, result)}).catch(err=>{BNMessage("evt_issuetoken", err)})
+        ).then(function(result){BNMessage("evt_issuetoken", null, result)}).catch(function(err){BNMessage("evt_issuetoken", err)})
       }
 
       /**
@@ -519,7 +519,7 @@
         apiCaller.pushTransaction(
           {maxCharge: 100000},
           new EVT.EvtAction("issuefungible", abi,".fungible",info[2])
-        ).then(result=>{BNMessage("evt_issuefungible", null, result)}).catch(err=>{BNMessage("evt_issuefungible", err)})
+        ).then(function(result){BNMessage("evt_issuefungible", null, result)}).catch(function(err){BNMessage("evt_issuefungible", err)})
       }
 
       /**
@@ -537,7 +537,7 @@
         apiCaller.pushTransaction(
           {maxCharge: 100000},
           new EVT.EvtAction("transferft", abi,".fungible", info[2])
-        ).then(result=>{BNMessage("evt_transferft", null, result)}).catch(err=>{BNMessage("evt_transferft", err)})
+        ).then(function(result){BNMessage("evt_transferft", null, result)}).catch(function(err){BNMessage("evt_transferft", err)})
       }
 
       /**
@@ -551,7 +551,7 @@
         apiCaller.pushTransaction(
           {maxCharge: 100000},
           new EVT.EvtAction("transfer", abi)
-        ).then(result=>{BNMessage("evt_transfer", null, result)}).catch(err=>{BNMessage("evt_transfer", err)})
+        ).then(function(result){BNMessage("evt_transfer", null, result)}).catch(function(err){BNMessage("evt_transfer", err)})
       }
 
       /**
@@ -587,7 +587,7 @@
             "value": icon,
             "creator": "[A] " + creator
           },".fungible",info[2])
-        ).then(result=>{BNMessage("evt_newfungible", null, result)}).catch(err=>{BNMessage("evt_newfungible", err)})
+        ).then(function(result){BNMessage("evt_newfungible", null, result)}).catch(function(err){BNMessage("evt_newfungible", err)})
       }
 
       function _parseAsset(asset) {
