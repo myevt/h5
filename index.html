@@ -413,10 +413,7 @@
        */
        function evt_evt2pevt(password, abi) {
         passport.setPwd(password)
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("evt2pevt", abi)
-        ).then(function(result){BNMessage("evt_evt2pevt", null, result)}).catch(function(err){BNMessage("evt_evt2pevt", err)})
+        _evtPushTransaction("evt_evt2pevt", [new EVT.EvtAction("evt2pevt", abi)])
       }
       /**
        * add meta info
@@ -429,10 +426,7 @@
       function evt_addmeta(password, abi, domain, key) {
         passport.setPwd(password)
         key = key || ".meta"
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("addmeta", abi, domain, key)
-        ).then(function(result){BNMessage("evt_addmeta", null, result)}).catch(function(err){BNMessage("evt_addmeta", err)})
+        _evtPushTransaction("evt_addmeta", [new EVT.EvtAction("addmeta", abi, domain, key)])
       }
 
       /**
@@ -453,13 +447,7 @@
        */
        function evt_newgroup(password, group) {
         passport.setPwd(password)
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("newgroup",{
-            name: group.name,
-            group: group
-          })
-        ).then(function(result){BNMessage("evt_newgroup", null, result)}).catch(function(err){BNMessage("evt_newgroup", err)})
+        _evtPushTransaction("evt_newgroup", [new EVT.EvtAction("newgroup",{name: group.name, group: group})])
       }
 
       /**
@@ -478,10 +466,7 @@
         }
         _authorization(authorization, abi)
 
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("newdomain", abi)
-        ).then(function(result){BNMessage("evt_newdomain", null, result)}).catch(function(err){BNMessage("evt_newdomain", err)})
+        _evtPushTransaction("evt_newdomain", [new EVT.EvtAction("newdomain", abi)])
       }
 
       /**
@@ -494,14 +479,7 @@
        */
       function evt_issuetoken(password, domain, names, owner) {
         passport.setPwd(password)
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("issuetoken", {
-            "domain": domain,
-            "names": names,
-            "owner": owner
-          })
-        ).then(function(result){BNMessage("evt_issuetoken", null, result)}).catch(function(err){BNMessage("evt_issuetoken", err)})
+        _evtPushTransaction("evt_issuetoken", [new EVT.EvtAction("issuetoken", {"domain": domain, "names": names, "owner": owner})])
       }
 
       /**
@@ -516,10 +494,7 @@
         if (!info) {
           return BNMessage("evt_issuefungible", "asset error")
         }
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("issuefungible", abi,".fungible",info[2])
-        ).then(function(result){BNMessage("evt_issuefungible", null, result)}).catch(function(err){BNMessage("evt_issuefungible", err)})
+        _evtPushTransaction("evt_issuefungible", [new EVT.EvtAction("issuefungible", abi,".fungible",info[2])])
       }
 
       /**
@@ -534,10 +509,7 @@
         if (!info) {
           return BNMessage("evt_transferft", "asset error")
         }
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("transferft", abi,".fungible", info[2])
-        ).then(function(result){BNMessage("evt_transferft", null, result)}).catch(function(err){BNMessage("evt_transferft", err)})
+        _evtPushTransaction("evt_transferft", [new EVT.EvtAction("transferft", abi,".fungible", info[2])])
       }
 
       /**
@@ -548,10 +520,7 @@
        */
       function evt_transfer(password, abi) {
         passport.setPwd(password)
-        apiCaller.pushTransaction(
-          {maxCharge: 100000},
-          new EVT.EvtAction("transfer", abi)
-        ).then(function(result){BNMessage("evt_transfer", null, result)}).catch(function(err){BNMessage("evt_transfer", err)})
+        _evtPushTransaction("evt_transfer", [new EVT.EvtAction("transfer", abi)])
       }
 
       /**
@@ -579,15 +548,15 @@
         }
         _authorization(authorization, abi)
 
-        apiCaller.pushTransaction(
-          {maxCharge: 100000}, 
-          new EVT.EvtAction("newfungible",abi),
-          new EVT.EvtAction("addmeta", {
+        var actions = []
+        actions.push(new EVT.EvtAction("newfungible",abi))
+        actions.push(new EVT.EvtAction("addmeta", {
             "key": "symbol-icon",
             "value": icon,
             "creator": "[A] " + creator
-          },".fungible",info[2])
-        ).then(function(result){BNMessage("evt_newfungible", null, result)}).catch(function(err){BNMessage("evt_newfungible", err)})
+          }, ".fungible", info[2]))
+
+        _evtPushTransaction("evt_newfungible", actions)
       }
 
       function _parseAsset(asset) {
@@ -646,6 +615,20 @@
           }
         }
         console.log(JSON.stringify(abi))
+      }
+
+      function _evtPushTransaction(target, evtActions) {
+        var act = "";
+        if (passport.getPwd()) {
+          act = "pushTransaction"
+          evtActions.unshift({maxCharge: 100000})
+        } else {
+          target = "_getEstimatedCharge"
+          act = "getEstimatedChargeForTransaction"
+          BNMessage(target, null, {charge:428})
+          return
+        }
+        apiCaller[act].apply(apiCaller, evtActions).then(function(result){BNMessage(target, null, result)}).catch(function(err){BNMessage(target, err)})
       }
       
     </script>
