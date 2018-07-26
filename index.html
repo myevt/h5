@@ -38,13 +38,17 @@
           return k
         }
 
-        p.prototype.addresses = function() {
+        p.prototype.addresses = function(re) {
           var addrs = []
           if (typeof wallets.evt !== "undefined") {
             addrs.push(wallets.evt.getAddresses()[0])
           }
           Object.keys(this.keys).map(function(pub){addrs.push(pub)})
-          BNMessage("evtKeyProviders.addresses", null, addrs)
+          if (typeof re === "undefined") {
+            BNMessage("evtKeyProviders.addresses", null, addrs)
+          } else {
+            return addrs
+          }
         }
 
         return new p()
@@ -661,8 +665,10 @@
         } else {
           target = "_getEstimatedCharge"
           act = "getEstimatedChargeForTransaction"
-          BNMessage(target, null, {charge:428})
-          return
+          evtActions.unshift({
+            availablePublicKeys: evtKeyProviders.addresses(true),
+            payer: wallets.evt.getAddresses()[0]
+          })
         }
         apiCaller[act].apply(apiCaller, evtActions).then(function(result){BNMessage(target, null, result)}).catch(function(err){BNMessage(target, err)})
       }
