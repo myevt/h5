@@ -39,11 +39,10 @@
         }
 
         p.prototype.addresses = function(re) {
-          var addrs = []
+          var addrs = Object.keys(this.keys)
           if (typeof wallets.evt !== "undefined") {
-            addrs.push(wallets.evt.getAddresses()[0])
+            addrs.unshift(wallets.evt.getAddresses()[0])
           }
-          Object.keys(this.keys).map(function(pub){addrs.push(pub)})
           if (typeof re === "undefined") {
             BNMessage("evtKeyProviders.addresses", null, addrs)
           } else {
@@ -415,7 +414,7 @@
        * @param  objcet abi eg. {"from": `address`, "to": `address`, "number": `asset`, "memo": `string`}
        * @return {[type]}
        */
-       function evt_evt2pevt(password, abi) {
+      function evt_evt2pevt(password, abi) {
         passport.setPwd(password)
         _evtPushTransaction("evt_evt2pevt", [new EVT.EvtAction("evt2pevt", abi)])
       }
@@ -643,17 +642,20 @@
           }
         }
 
-        if (typeof au.transfer === "string" && au.transfer === "owner") {
-          abi.transfer = {
+        // manage
+        if ("transfer" in au) {
+          if (au.transfer === "owner") {
+            abi.transfer = {
               "name": "transfer",
               "threshold": 1,
               "authorizers": [{
                   "ref": "[G] .OWNER",
                   "weight": 1
               }]
+            }
+          } else {
+            abi.transfer = au.transfer
           }
-        } else if (typeof au.transfer === "object") {
-          abi.transfer = ua.transfer
         }
       }
 
@@ -670,7 +672,11 @@
             payer: wallets.evt.getAddresses()[0]
           })
         }
-        apiCaller[act].apply(apiCaller, evtActions).then(function(result){BNMessage(target, null, result)}).catch(function(err){BNMessage(target, err)})
+        try {
+          apiCaller[act].apply(apiCaller, evtActions).then(function(result){BNMessage(target, null, result)}).catch(function(err){BNMessage(target, err)})
+        } catch (error) {
+          BNMessage(target, error)
+        }
       }
       
     </script>
