@@ -57,19 +57,23 @@ NEVER SHOW IT TO ANY OTHER PEOPLE</pre>
                 imgPrams = imgPrams || {autoReload: true}
                 try {
                     let time = new Date().valueOf();
-                    EVT.EvtLink.getEVTLinkQrImage(qrType, qrParams, imgPrams, 
-                        function(err, res) {
-                            if (err) {
-                                alert(err.message);
-                                return;
-                            }
-                            // canvas: document.getElementById("canvas"), 
-                            document.getElementById("pass").setAttribute("src", res.dataUrl);
-                            EVT.EvtLink.parseEvtLink(res.rawText).then(function(res) {
-                                console.log(JSON.stringify(res, null, 4))
-                            });
-                            // document.getElementById("passText").innerHTML = res.rawText.substr(8);
-                    });
+                    EVT.EvtLink.getUniqueLinkId().then(function(linkId) {
+                        qrParams.linkId = linkId
+                        EVT.EvtLink.getEVTLinkQrImage(qrType, qrParams, imgPrams, 
+                            function(err, res) {
+                                if (err) {
+                                    alert(err.message);
+                                    return;
+                                }
+                                // canvas: document.getElementById("canvas"), 
+                                document.getElementById("pass").setAttribute("src", res.dataUrl);
+                                EVT.EvtLink.parseEvtLink(res.rawText).then(function(res) {
+                                    console.log(JSON.stringify(res, null, 4))
+                                });
+                                // document.getElementById("passText").innerHTML = res.rawText.substr(8);
+                        });
+                    })
+                    
                 }
                 catch(e) {
                     alert(e.message);

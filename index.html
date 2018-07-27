@@ -496,7 +496,7 @@
         var creator = wallets.evt.getAddresses()[0]
         authorization.name = domain
 
-        _evtPushTransaction("evt_updatedomain", [new EVT.EvtAction("updatedomain", abi)])
+        _evtPushTransaction("evt_updatedomain", [new EVT.EvtAction("updatedomain", authorization)])
       }
 
       /**
