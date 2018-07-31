@@ -96,7 +96,7 @@
         var valid = false
         valid = EVT.EvtKey.isValidPrivateKey(prik) || (isHex(prik) && prik.length===64)
 
-        BNMessage("isValidAddress", !valid, '')
+        BNMessage("isValidPrivateKey", !valid, '')
       }
 
       // myWallet.HDkey.generateMnemonic() 助记词
