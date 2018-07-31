@@ -53,6 +53,52 @@
         return new p()
       })()
 
+      function isHex(str) {
+        if (str.length % 2 === 0 && str.match(/^[0-9a-f]+$/i)) {
+          return true
+        }else{
+          return false
+        }
+      }
+
+      /**
+       * is Valid address EVT\EOS\ETH
+       * @param  string address
+       * @return {[type]}         [description]
+       */
+      function isValidAddress(address) {
+        var s3 = address.substr(0,3)
+        if (s3 == "EOS") {
+          address = "EVT"+address.substr(3)
+          s3 = "EVT"
+        }
+
+        var valid = false;
+        if (s3 == "EVT") {
+          valid = EVT.EvtKey.isValidAddress(address)
+        } else {
+          // eth address
+          if (address.substr(0,2).toLowerCase() == "0x") {
+            address = address.substr(2)
+          }
+          valid = isHex(address) && address.length==40
+        }
+
+        BNMessage("isValidAddress", !valid, '')
+      }
+
+      /**
+       * is Valid PrivateKey EVT\EOS\ETH
+       * @param  string prik
+       * @return {[type]}         [description]
+       */
+      function isValidPrivateKey(prik) {
+        var valid = false
+        valid = EVT.EvtKey.isValidPrivateKey(prik) || (isHex(prik) && prik.length===64)
+
+        BNMessage("isValidAddress", !valid, '')
+      }
+
       // myWallet.HDkey.generateMnemonic() 助记词
       // web3.eth.sendTransaction({from: '627306090abab3a6e1400e9345bc60c78a8bef57', to: "f17f52151ebef6c7334fad080c5704d77216b732", value: 10*1.0e18, gasPrice: 18000000000, gas: 50000},(err, txid)=>console.log(err,txid))
       var web3 = new Web3();
