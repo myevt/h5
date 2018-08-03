@@ -61,8 +61,16 @@ checkWalletPassword(password, ks)
 
 #### evtKeyProviders
 ```
-# 导入
-evtKeyProviders.import(privKey, publicKey)
+# 导入私钥
+evtKeyProviders.import(privKey, isPayer)
+evtKeyProviders.import("5KjJUS14wBNgHGRW1NYPFgfJotnS6jvwv7wzvfc75zAqfPWYmhD", true)
+evtKeyProviders.import("5KjJUS14wBNgHGRW1NYPFgfJotnS6jvwv7wzvfc75zAqfPWYmhD")
+
+# 设置payer
+evtKeyProviders.setPayer("EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj")
+
+# 设置手续费上限 100000 = 1 EVT/PEVT
+evtKeyProviders.setMaxCharge(100000)
 
 # 导出地址
 evtKeyProviders.addresses()

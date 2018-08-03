@@ -21,11 +21,24 @@
       var evtKeyProviders = (function(){
         var p = function(){
           this.keys = {}
+          this.payer = ""
+          this.maxCharge = 100000
         }
-        p.prototype.import = function(privKey) {
+        p.prototype.setPayer = function(payer) {
+          this.payer = payer
+          BNOK("evtKeyProviders.setPayer")
+        }
+        p.prototype.setMaxCharge = function(maxCharge) {
+          this.maxCharge = maxCharge
+          BNOK("evtKeyProviders.setMaxCharge")
+        }
+        p.prototype.import = function(privKey, isPayer) {
           if (EVT.EvtKey.isValidPrivateKey(privKey)) {
             var publicKey = EVT.EvtKey.privateToPublic(privKey)
             this.keys[publicKey] = privKey
+            if (typeof isPayer !== "undefined" && isPayer) {
+              this.payer = publicKey
+            }
             BNOK("evtKeyProviders.import")
           } else {
             BNMessage("evtKeyProviders.import", "Invalid key")
@@ -48,6 +61,10 @@
           } else {
             return addrs
           }
+        }
+
+        p.prototype.pushConfig = function() {
+          return {payer: this.payer || EVT.EvtKey.getNullAddress(), maxCharge: this.maxCharge}
         }
 
         return new p()
@@ -709,7 +726,7 @@
         var act = "";
         if (passport.getPwd()) {
           act = "pushTransaction"
-          evtActions.unshift({maxCharge: 100000})
+          evtActions.unshift(evtKeyProviders.pushConfig())
         } else {
           target = "_getEstimatedCharge"
           act = "getEstimatedChargeForTransaction"
