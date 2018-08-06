@@ -116,6 +116,36 @@
         BNMessage("isValidPrivateKey", !valid, '')
       }
 
+      /**
+       * is Valid GroupDef
+       * @param  object group
+       * @return {[type]}         [description]
+       */
+      function isValidGroupDef(group) {
+        var _nodes = group.root && group.root.nodes
+        if (_nodes) {
+          var haveDieNode = evtGroupDieNodes(_nodes, group.root.threshold)
+          BNMessage("isValidGroupDef", haveDieNode)
+        } else {
+          BNMessage("isValidGroupDef", "Invalid group def")
+        }
+      }
+
+      function evtGroupDieNodes(nodes, threshold) {
+        var weightCount = 0
+        
+        for (var i = 0; i < nodes.length; i++) {
+          var node = nodes[i];
+          if (typeof node.nodes === "object") {
+            if(evtGroupDieNodes(node.nodes, node.threshold) ) {
+              return true
+            }
+          }
+          weightCount += node.weight
+        }
+        return weightCount < threshold
+      }
+
       // myWallet.HDkey.generateMnemonic() 助记词
       // web3.eth.sendTransaction({from: '627306090abab3a6e1400e9345bc60c78a8bef57', to: "f17f52151ebef6c7334fad080c5704d77216b732", value: 10*1.0e18, gasPrice: 18000000000, gas: 50000},(err, txid)=>console.log(err,txid))
       var web3 = new Web3();

@@ -230,6 +230,9 @@ evt_updategroup(password, group)
 
 # group info
 evt_getGroupDetail("testgroup")
+
+# check is have die node
+isValidGroupDef(group)
 ```
 
 #### 发行tokens
