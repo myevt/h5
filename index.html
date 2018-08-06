@@ -64,7 +64,7 @@
         }
 
         p.prototype.pushConfig = function() {
-          return {payer: this.payer || EVT.EvtKey.getNullAddress(), maxCharge: this.maxCharge}
+          return {payer: this.payer || wallets.evt.getAddresses()[0], maxCharge: this.maxCharge}
         }
 
         return new p()
