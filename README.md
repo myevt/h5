@@ -101,7 +101,8 @@ evt_getOwnedTokens(publicKey)
 
 get Fungible Symbol Detail
 ```
-evt_getFungibleSymbolDetail("EVT")
+# EVT(S#1)
+evt_getFungibleSymbolDetail(1)
 ```
 
 ### evt_addmeta(password, abi, domain, [key])
@@ -117,7 +118,7 @@ evt_addmeta("abcd1234", abi, "org.ding.a")
 evt_addmeta("abcd1234", abi, "org.ding.a", "bighouse1101")
 
 # add fungible asset meta
-evt_addmeta("abcd1234", abi, ".fungible", "CSB")
+evt_addmeta("abcd1234", abi, ".fungible", 3)
 
 # add group meta
 evt_addmeta("abcd1234", abi, ".group", "csgroup1")
@@ -126,7 +127,7 @@ evt_addmeta("abcd1234", abi, ".group", "csgroup1")
 ### evt2pevt
 
 ```
-evt_evt2pevt("abcd1234", {from: wallets.evt.getAddresses()[0], to: wallets.evt.getAddresses()[0], number: "1.00000 EVT", memo:""})
+evt_evt2pevt("abcd1234", {from: wallets.evt.getAddresses()[0], to: wallets.evt.getAddresses()[0], number: "1.00000 S#1", memo:""})
 ```
 
 ### Fungible asset
@@ -140,24 +141,24 @@ permission_def = {
     "authorizers", `authorizer_weight[]`
 }
 var dataUrl = "data:image/gif;base64,R0lGODlhAwADAIAAAP///8zMzCH5BAAAAAAALAAAAAADAAMAAAIEBHIJBQA7"
-evt_newfungible("1231456", "100000.0000 EVT", {issue: `permission_def`, manage: `permission_def`}, dataUrl)
+evt_newfungible("1231456", "100000.0000 S#3", "CNY", "china-yuan", {issue: `permission_def`, manage: `permission_def`}, dataUrl)
 ```
 
 #### 编辑
 ```
-evt_updfungible("1231456", "5,EVT", {issue: `permission_def`, manage: `permission_def`})
+evt_updfungible("1231456", 1, {issue: `permission_def`, manage: `permission_def`})
 ```
 
 #### 发行
 
 ```
-evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 EVT",memo: "memo"})
+evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 S#1",memo: "memo"})
 ```
 
 #### 转移
 
 ```
-evt_transferft("abcd1234", {from: publicKey, to: publicKey2, number: "10.00 YYA", memo: "memo"})
+evt_transferft("abcd1234", {from: publicKey, to: publicKey2, number: "10.00 S#3", memo: "memo"})
 ```
 
 ### Non-Fungible Tokens

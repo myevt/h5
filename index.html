@@ -450,6 +450,37 @@
       function evt_getFungibleBalance(publicKey) {
         apiCaller.getFungibleBalance(publicKey).then(function(result){BNMessage("evt_getFungibleBalance", null, result)}).catch(function(err){BNMessage("evt_getFungibleBalance", err)})
       }
+      function evt_getFungibleBalanceInfos(publickey) {
+        apiCaller.getFungibleBalance(publicKey)
+          .then(function(result){
+            var infos = []
+            result.forEach(function(asset){
+              console.log(asset.split("#"))
+              apiCaller.getFungibleSymbolDetail(parseInt(asset.split("#")[1])).then(function(detail){
+                var iconData = '';
+                for (var index = 0; index < detail.metas.length; index++) {
+                  if (detail.metas[index].key==="symbol-icon") {
+                    iconData = detail.metas[index].value
+                  }
+                }
+
+                var _sym = detail.sym.split(",S#")
+                infos.push({
+                  balance: asset,
+                  decimals: _sym[0],
+                  fungibleId: _sym[1],
+                  sym_name: detail.sym_name,
+                  name: detail.name,
+                  icon: iconData
+                })
+                if (infos.length == result.length) {
+                  BNMessage("evt_getFungibleBalanceInfo", null, infos)
+                }
+              }).catch(function(err){BNMessage("evt_getFungibleBalanceInfo", err)})
+            })
+          })
+          .catch(function(err){BNMessage("evt_getFungibleBalanceInfo", err)})
+      }
 
       /**
        * get Managed Groups
@@ -651,11 +682,13 @@
       /**
        * newfungible
        * @param  string password      [description]
-       * @param  string totalSupply   asset type eg "10000.00000 EVT"
+       * @param  string totalSupply   asset type eg "10000.00000 S#1"
+       * @param  string symName       asset symname eg "EVT"
+       * @param  string name          asset name eg "evriToken"
        * @param  objcet authorization prototype include issue,transfer,manage @see EVT permission_def
        * @return {[type]}               [description]
        */
-      function evt_newfungible(password, totalSupply, authorization, icon) {
+      function evt_newfungible(password, totalSupply, symName, name, authorization, icon) {
         passport.setPwd(password)
         var creator = wallets.evt.getAddresses()[0]
         var info = _parseAsset(totalSupply)
@@ -663,11 +696,13 @@
           return BNMessage("evt_newfungible", "totalSupply error")
         }
 
-        var sym = [info[1]?info[1].length-1:"0", info[2]].join(",")
+        var sym = [info[1]?info[1].length-1:"0", info[2]].join(",S#")
 
 
         var abi = {
             "sym": sym,
+            "sym_name": symName,
+            "name": name || symName,
             "creator": creator,
             "total_supply": totalSupply
         }
@@ -687,18 +722,18 @@
       /**
        * update fungible
        * @param  string password
-       * @param  string sym           eg "5,EVT"
+       * @param  integer sym           eg "5"
        * @param  objcet authorization prototype include issue,transfer,manage @see EVT permission_def
        * @return {[type]}               [description]
        */
       function evt_updfungible(password, sym, authorization) {
         passport.setPwd(password)
-        authorization.sym = sym
+        authorization.sym_id = sym
         _evtPushTransaction("evt_updfungible", [new EVT.EvtAction("updfungible", authorization)])
       }
 
       function _parseAsset(asset) {
-        return /^\d+(\.\d+)?\ (\w+)$/.exec(asset)
+        return /^\d+(\.\d+)?\ S#(\d+)$/.exec(asset)
       }
 
       function _authorization(au, abi) {
