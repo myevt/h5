@@ -149,7 +149,7 @@
       // myWallet.HDkey.generateMnemonic() 助记词
       // web3.eth.sendTransaction({from: '627306090abab3a6e1400e9345bc60c78a8bef57', to: "f17f52151ebef6c7334fad080c5704d77216b732", value: 10*1.0e18, gasPrice: 18000000000, gas: 50000},(err, txid)=>console.log(err,txid))
       var web3 = new Web3();
-      var apiCaller = new EVT();
+      var apiCaller = EVT();
       var wallets = {};
       // 需要用到密码钱先设置用户密码 passport.setPwd('password')
       /**
@@ -391,22 +391,24 @@
         if (wallets.evt === undefined) {
           return BNMessage("setEvtProvider", "Please initHDkey first!");
         }
-        var ks = wallets.evt
 
-        apiCaller.config.endpoint = network
-        apiCaller.config.keyProvider = function(transaction) {
-          var password = passport.getPwd();
-          return new Promise(function(resolve, reject){
-            ks.keyFromPassword(password,function(err,pw){
-              if (err || !ks.isDerivedKeyCorrect(pw)) {
-                reject("Password error")
-              } else {
-                var keys = evtKeyProviders.export(ks.exportPrivateKey(ks.getAddresses()[0], pw))
-                resolve(keys)
-              }
-            })
-          })
-        }
+        apiCaller = EVT({
+            endpoint: network,
+            keyProvider: function(transaction) {
+              var password = passport.getPwd();
+              return new Promise(function(resolve, reject){
+                var ks = wallets.evt
+                ks.keyFromPassword(password,function(err,pw){
+                  if (err || !ks.isDerivedKeyCorrect(pw)) {
+                    reject("Password error")
+                  } else {
+                    var keys = evtKeyProviders.export(ks.exportPrivateKey(ks.getAddresses()[0], pw))
+                    resolve(keys)
+                  }
+                })
+              })
+            }
+        });
 
         BNOK("setEvtProvider")
       }
