@@ -161,6 +161,11 @@ evt_issuefungible('abcd1234', {address: publicKey, number: "10.00000 S#1",memo: 
 evt_transferft("abcd1234", {from: publicKey, to: publicKey2, number: "10.00 S#3", memo: "memo"})
 ```
 
+#### 转账记录
+```
+evt_getFungibleActionsByAddress(3, "EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj", 0, 10)
+```
+
 ### Non-Fungible Tokens
 
 #### 创建域

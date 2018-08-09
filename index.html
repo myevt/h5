@@ -669,6 +669,41 @@
       }
 
       /**
+       * Fungible transfer lists
+       * @param  int    fungible id
+       * @param  string address
+       * @param  int    skip=0   started number
+       * @param  int    take=10  perPage numbere
+       * @return {[type]}          [description]
+       */
+      function evt_getFungibleActionsByAddress(fid, address, skip, take) {
+        skip = skip || 0
+        take = take || 10
+        apiCaller.getFungibleActionsByAddress(fid, address, skip, take)
+        .then(function(result){
+          var list = [],item = {}
+          for (var i = 0; i < result.length; i++) {
+            item = {
+                createdAt: result[i].created_at,
+                to: "",
+                from: "",
+                number: result[i].data.number,
+                memo: result[i].data.memo,
+              }
+            if (typeof result[i].data.address !== "undefined") {
+              item.to = result[i].data.address
+            } else {
+              item.to = result[i].data.to
+              item.from = result[i].data.from
+            }
+            list.push(item)
+          }
+          BNMessage("evt_getFungibleActionsByAddress", null, list)
+        })
+        .catch(function(err){BNMessage("evt_getFungibleActionsByAddress", err)})
+      }
+
+      /**
        * transfer Token
        * @param  string password
        * @param  objcet abi      {domain: "org.ding.a", name: "token_name", to: ["address"], memo: "string"}
