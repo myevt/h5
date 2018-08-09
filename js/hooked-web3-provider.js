@@ -176,7 +176,7 @@ var factory = function factory(Web3) {
             var final_nonce = Math.max(nonce, _this3.global_nonces[sender] || 0);
 
             // Update the transaction parameters.
-            tx_params.nonce = Web3.prototype.toHex(final_nonce);
+            tx_params.nonce = Web3.prototype.toHex(nonce);
 
             // Update caches.
             session_nonces[sender] = final_nonce + 1;

@@ -22,7 +22,7 @@
         var p = function(){
           this.keys = {}
           this.payer = ""
-          this.maxCharge = 100000
+          this.maxCharge = 1000000
         }
         p.prototype.setPayer = function(payer) {
           this.payer = payer
@@ -807,6 +807,113 @@
         } catch (error) {
           BNMessage(target, error)
         }
+      }
+
+      function getEthERC20ABI() {
+        return [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"INITIAL_SUPPLY","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_subtractedValue","type":"uint256"}],"name":"decreaseApproval","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_addedValue","type":"uint256"}],"name":"increaseApproval","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}]
+      }
+
+      /**
+       * get token balance
+       * @param  string  address
+       * @param  []string  tokenAddresses
+       * @return {[type]}               [description]
+       */
+      function eth_tokenBalance(address, tokenAddresses) {
+        var result = Object.create(null), count=0
+        if (typeof tokenAddresses === "string") {
+          tokenAddresses = [tokenAddresses]
+        }
+        var contract = web3.eth.contract(getEthERC20ABI())
+        tokenAddresses.forEach(function(at, index){
+          try {
+            result[at] = contract.at(at).balanceOf(address)
+          } catch (error) {
+            console.log(index, at)
+          }
+          count = count + 1
+          if (count===tokenAddresses.length) {
+            BNMessage("eth_tokenBalance", null, result)
+          }
+        })
+      }
+
+      /**
+       * get eth basecoin balance
+       * @param  string  address
+       * @return {[type]}               [description]
+       */
+      function eth_getBalance(address) {
+        try {
+          var balance = web3.eth.getBalance(address)
+          BNMessage("eth_getBalance", null, balance)
+        } catch (error) {
+          BNMessage("eth_getBalance", error.message)
+        }
+      }
+
+      /**
+       * get eth basecoin balance
+       * @param  string  password
+       * @param  objcet  txParams eg. {from: fromAddr, to: toAddr, value: value, gasPrice: gasPrice, gas: gas}
+       * @return {[type]}               [description]
+       */
+      function eth_sendTransaction(password, txParams) {
+        passport.setPwd(password)
+        web3.eth.sendTransaction(txParams, function (err, txhash) {
+          if (err) {
+            console.log(err)
+            BNMessage("eth_sendTransaction", err.message)
+          } else {
+            BNMessage("eth_sendTransaction", null, txhash)
+          }
+        })
+      }
+
+      /**
+       * ERC20 calls
+       * @param  object  where    eg. {address: 'token address', method: "contract method", password:"if use"}
+       * @param  array   args     the contract method inputs
+       * @param  object  txParams the eth transaction object
+       * @return {[type]}               [description]
+       */
+      function eth_contractCall(where, args, txParams) {
+        if (typeof args === "string") {
+          args = [args]
+        }
+
+        if (typeof txParams === "object") {
+          args.push(_eth_txParams(txParams))
+        }
+
+        if ("password" in where && where.password) {
+          passport.setPwd(where.password)
+        }
+
+        var contract = web3.eth.contract(getEthERC20ABI()).at(where.address)
+        var callback = function(err, txhash) {
+          if (err) {
+            console.log(err)
+            BNMessage("eth_contractCall", err.message)
+          } else {
+            BNMessage("eth_contractCall", null, txhash)
+          }
+        }
+        args.push(callback)
+        contract[where.method].apply(this, args)
+      }
+
+      function _eth_txParams(tx) {
+        var _tx = Object.create({
+          from: wallets.eth.getAddresses()[0],
+          value: 0,
+          gasPrice: 18000000000,
+          gas: 50000
+        })
+        Object.keys(tx).forEach(function(key){
+          _tx[key] = tx[key]
+        })
+        return tx
       }
       
     </script>

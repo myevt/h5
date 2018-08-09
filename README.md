@@ -278,3 +278,67 @@ evtLink("everiPay", {
     maxAmount: 100000}
 )
 ```
+
+## ETH 功能接口
+
+### 设置节点
+```
+# must make eth type wallet first!!!
+setWeb3Provider("HTTP://192.168.1.69:7545")
+```
+
+### 查询 BaseCoin 余额
+```
+eth_getBalance("0x627306090abaB3A6e1400e9345bC60c78a8BEf57")
+```
+
+### 查询 Tokens Balance
+```
+eth_tokenBalance("0x627306090abaB3A6e1400e9345bC60c78a8BEf57", ["0x345cA3e014Aaf5dcA488057592ee47305D9B3e10"])
+# returns
+{"0x345cA3e014Aaf5dcA488057592ee47305D9B3e10": "999900"}
+```
+
+### 转账 ETH eth_sendTransaction(password, txParams)
+```
+var txParams = {
+    from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
+    to: "0xf17f52151EbEF6C7334FAD080c5704D77216b732", 
+    value: 1 * 1.0e18, 
+    gasPrice: 10000000, 
+    gas: 50000
+}
+eth_sendTransaction("abcd1234", txParams)
+```
+
+### ERC20 合约调用 eth_contractCall(where, args, txParams)
+
+```
+# where
+var where = {
+    address: "0x345cA3e014Aaf5dcA488057592ee47305D9B3e10", // Token 合约地址
+    method: "balanceOf", // 合约方法
+    password: "password" // eth 钱包密码 查询类可以省略。
+}
+
+# where.method input args list
+var args = ["0x627306090abaB3A6e1400e9345bC60c78a8BEf57"]
+
+# txParams 交易对象
+var txParams = {
+    from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
+    to: "0xf17f52151EbEF6C7334FAD080c5704D77216b732", 
+    value: 0, 
+    gasPrice: 10000000, 
+    gas: 50000
+}
+
+# 调用合约 transfer 方法
+eth_contractCall(
+    {address:"0x345cA3e014Aaf5dcA488057592ee47305D9B3e10",method:"transfer"},
+    ["0xf17f52151EbEF6C7334FAD080c5704D77216b732", 100], 
+    {from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57", gasPrice: 10000000, gas:4541592}
+)
+
+return txHash
+```
