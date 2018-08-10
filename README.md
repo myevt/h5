@@ -261,6 +261,19 @@ var abi = {domain: "org.ding.a", name: "token_name", to: ["address"], memo: "str
 evt_transfer(password, abi)
 ```
 
+#### evt_nftTransferLogs(domain, name, skip, take)
+```
+evt_nftTransferLogs("org.ding.assets","big-house-1101")
+# return
+[
+    {
+	    "createdAt": "2018-08-10T10:00:30.000",
+	    "to": ["EVT7ECiv81CWpP3CSkvCUNKCSQ8JQRgRro9AubK6Yg9Gz1vo78d1R"],
+	    "trxId": "9fc80ab16f47d3e1ac03c8c9c37b0334bd6ccad51a04ba0207155111430bac4e"
+    }
+]
+```
+
 
 ### everiPass & everiPay
 > open evtLink.html

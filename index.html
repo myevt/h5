@@ -689,6 +689,7 @@
                 from: "",
                 number: result[i].data.number,
                 memo: result[i].data.memo,
+                trxId: result[i].trx_id
               }
             if (typeof result[i].data.address !== "undefined") {
               item.to = result[i].data.address
@@ -712,6 +713,30 @@
       function evt_transfer(password, abi) {
         passport.setPwd(password)
         _evtPushTransaction("evt_transfer", [new EVT.EvtAction("transfer", abi)])
+      }
+
+      /**
+       * n-Fungible transfer logs
+       * @param  string domain
+       * @param  string name
+       * @param  int    skip=0   started number
+       * @param  int    take=10  perPage numbere
+       * @return {[type]}          [description]
+       */
+      function evt_nftTransferLogs(domain, name, skip, take) {
+        apiCaller.getActions({domain: domain, key: name, skip: skip || 0, take: take || 10, names:["transfer"]})
+          .then(function(result){
+            var list = []
+            for (let i = 0; i < result.length; i++) {
+              list.push({
+                createdAt: result[i].created_at,
+                to: result[i].data.to,
+                trxId: result[i].trx_id
+              })
+            }
+            BNMessage("evt_nftTransferLogs", null, list)
+          })
+          .catch(function(err){BNMessage("evt_nftTransferLogs", err)})
       }
 
       /**
