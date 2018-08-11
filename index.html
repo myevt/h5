@@ -880,14 +880,14 @@
        * @return {[type]}               [description]
        */
       function eth_tokenBalance(address, tokenAddresses) {
-        var result = Object.create(null), count=0
+        var result = [], count=0
         if (typeof tokenAddresses === "string") {
           tokenAddresses = [tokenAddresses]
         }
         var contract = web3.eth.contract(getEthERC20ABI())
         tokenAddresses.forEach(function(at, index){
           try {
-            result[at] = contract.at(at).balanceOf(address).toString()
+            result.push([at, contract.at(at).balanceOf(address).toString()])
           } catch (error) {
             console.log(index, at)
           }

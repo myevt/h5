@@ -314,7 +314,7 @@ eth_getBalance("0x627306090abaB3A6e1400e9345bC60c78a8BEf57")
 ```
 eth_tokenBalance("0x627306090abaB3A6e1400e9345bC60c78a8BEf57", ["0x345cA3e014Aaf5dcA488057592ee47305D9B3e10"])
 # returns
-{"0x345cA3e014Aaf5dcA488057592ee47305D9B3e10": "999900"}
+[["0x345cA3e014Aaf5dcA488057592ee47305D9B3e10", "999900"]]
 ```
 
 ### 转账 ETH eth_sendTransaction(password, txParams)
