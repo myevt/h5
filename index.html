@@ -887,7 +887,7 @@
         var contract = web3.eth.contract(getEthERC20ABI())
         tokenAddresses.forEach(function(at, index){
           try {
-            result[at] = contract.at(at).balanceOf(address)
+            result[at] = contract.at(at).balanceOf(address).toString()
           } catch (error) {
             console.log(index, at)
           }
@@ -906,7 +906,7 @@
       function eth_getBalance(address) {
         try {
           var balance = web3.eth.getBalance(address)
-          BNMessage("eth_getBalance", null, balance)
+          BNMessage("eth_getBalance", null, balance.toString())
         } catch (error) {
           BNMessage("eth_getBalance", error.message)
         }
