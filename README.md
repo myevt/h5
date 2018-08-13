@@ -281,8 +281,12 @@ evt_nftTransferLogs("org.ding.assets","big-house-1101")
 ```
 evtLink(qrType, qrParams, [imgPrams])
 
+# get linkId
+evtGetUniqueLinkId()
+
 # everiPass
-evtLink("everiPass", { 
+evtLink("everiPass", {
+    linkId: "5ccf0b74ce77662ec5995fa6a8d96481",
     keyProvider: [ "5JgWJptxZENHR69oZsPSeVTXScRx7jYPMTjPTKAjW2JFnjEhoDZ", "5JgWJptxZENHR69oZsPSeVTXScRx7jYPMTjPTKAjW2JFnjEhoDZ"],
     domainName: "testdomain",
     tokenName: "testtoken",
@@ -291,8 +295,9 @@ evtLink("everiPass", {
 
 # everiPay 1.00000 EVT
 evtLink("everiPay", {
+    linkId: "5ccf0b74ce77662ec5995fa6a8d96481",
     keyProvider: [ "5JgWJptxZENHR69oZsPSeVTXScRx7jYPMTjPTKAjW2JFnjEhoDZ"],
-    symbol: "5,EVT",
+    symbol: 1,
     maxAmount: 100000}
 )
 ```
