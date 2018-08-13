@@ -54,27 +54,23 @@ OR BEING SCANNED BY CORRECT SCANNERS
 NEVER SHOW IT TO ANY OTHER PEOPLE</pre>
         <script>
             function evtLink(qrType, qrParams, imgPrams) {
-                imgPrams = imgPrams || {autoReload: true}
+                imgPrams = imgPrams || {autoReload: false}
                 setInfo(qrType, qrParams)
                 try {
-                    let time = new Date().valueOf();
-                    EVT.EvtLink.getUniqueLinkId().then(function(linkId) {
-                        qrParams.linkId = linkId
-                        EVT.EvtLink.getEVTLinkQrImage(qrType, qrParams, imgPrams, 
-                            function(err, res) {
-                                if (err) {
-                                    alert(err.message);
-                                    return;
-                                }
-                                // canvas: document.getElementById("canvas"), 
-                                document.getElementById("pass").setAttribute("src", res.dataUrl);
-                                EVT.EvtLink.parseEvtLink(res.rawText).then(function(res) {
-                                    console.log(JSON.stringify(res, null, 4))
-                                });
-                                // document.getElementById("passText").innerHTML = res.rawText.substr(8);
-                        });
-                    })
-                    
+                    EVT.EvtLink.getEVTLinkQrImage(qrType, qrParams, imgPrams, 
+                        function(err, res) {
+                            if (err) {
+                                alert(err.message);
+                                return;
+                            }
+                            // canvas: document.getElementById("canvas"), 
+                            document.getElementById("pass").setAttribute("src", res.dataUrl);
+                            console.log(res.rawText);
+                            // EVT.EvtLink.parseEvtLink(res.rawText).then(function(res) {
+                            //     console.log(JSON.stringify(res, null, 4))
+                            // });
+                            // document.getElementById("passText").innerHTML = res.rawText.substr(8);
+                    });
                 }
                 catch(e) {
                     alert(e.message);
@@ -91,8 +87,8 @@ NEVER SHOW IT TO ANY OTHER PEOPLE</pre>
                         }
                         break;
                     case "everiPay":
-                        var info = qrParams.symbol.split(",")
-                        headInfo = "Max payment: "+(qrParams.maxAmount / Math.pow(10,info[0])) + " " + info[1];
+                        // var info = qrParams.symbol.split(",")
+                        // headInfo = "Max payment: "+(qrParams.maxAmount / Math.pow(10,info[0])) + " " + info[1];
                         break;
                 
                     default:

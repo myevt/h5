@@ -414,6 +414,10 @@
       }
 
 
+      function evtGetUniqueLinkId() {
+        EVT.EvtLink.getUniqueLinkId().then(function(result){BNMessage("evtGetUniqueLinkId", null, result)}).catch(function(err){BNMessage("evtGetUniqueLinkId", err)})
+      }
+
 
       function BNMessage(target, error, result){
         passport.setPwd("")
