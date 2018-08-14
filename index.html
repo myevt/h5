@@ -734,19 +734,30 @@
           var list = [],item = {}
           for (var i = 0; i < result.length; i++) {
             item = {
-                createdAt: result[i].created_at,
-                to: "",
-                from: "",
-                number: result[i].data.number,
-                memo: result[i].data.memo,
-                trxId: result[i].trx_id
-              }
-            if (typeof result[i].data.address !== "undefined") {
-              item.to = result[i].data.address
-            } else {
-              item.to = result[i].data.to
-              item.from = result[i].data.from
+              createdAt: result[i].created_at,
+              action: result[i].name,
+              to: "",
+              from: "",
+              number: result[i].data.number,
+              memo: result[i].data.memo,
+              trxId: result[i].trx_id
             }
+
+            switch (item.action) {
+              case "issuefungible":
+                item.to = result[i].data.address
+                break;
+              case "everipay":
+                item.to = result[i].data.payee
+                item.from = address
+                break;
+            
+              default: // transferft
+                item.to = result[i].data.to
+                item.from = result[i].data.from
+                break;
+            }
+
             list.push(item)
           }
           BNMessage("evt_getFungibleActionsByAddress", null, list)
