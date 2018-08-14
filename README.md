@@ -164,6 +164,17 @@ evt_transferft("abcd1234", {from: publicKey, to: publicKey2, number: "10.00 S#3"
 #### 转账记录
 ```
 evt_getFungibleActionsByAddress(3, "EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj", 0, 10)
+// returns
+[
+    { 
+        createdAt: "2018-08-14T01:44:56.163", 
+        action: "everipay|issuefungible|transferft", 
+        to: "EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Y…", 
+        from: "EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45H…", 
+        number: "0.00100 S#1", 
+        trxId: "2709cec895b279c1481866caf73838673f2…" 
+    }
+]
 ```
 
 ### Non-Fungible Tokens
@@ -321,7 +332,7 @@ evtGetEvtLinkAction(linkText)
 var abi = {
     link:"0UKDR:WV4KRJQ/42B860L$UYH:/75JKD4A2-K/*ZDFY*+A-2E_QSGGWZHGH1XK2//M:V84S$/82BFX+U8WZKI88KUP9UYB3IJK4OMQ2X:ZO:CMWCA3WAV8*C5TOY7ZR42Z2:8QWHQ*3N8-J27J",
     payee:"EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Yg7GpyKzM8EX244P5Rb", 
-    number:"0.00100 S#1", payee:"EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Yg7GpyKzM8EX244P5Rb"
+    number:"0.00100 S#1"
 }
 evt_everiPay("abcd1234", abi)
 ```
