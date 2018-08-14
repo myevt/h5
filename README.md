@@ -302,6 +302,37 @@ evtLink("everiPay", {
 )
 ```
 
+### everiPass & everiPay scan QrCode
+
+#### evtGetEvtLinkAction
+```
+// everiPay/everiPass QrCode link string
+var linkText="0UKDR:WEEHI-67JCZC0326W0O1DRQ$$DW:P*P*MH53USKIS2F_QUM0N-JZOSB+YHN1AB4HRJNATYB1AJ2Q$Z7TV6JW:E$S-1V167JKLF71TUOE:QR*$0O43FN8:XYLFZFUL5LH2HWND4XMHN/V"
+evtGetEvtLinkAction(linkText)
+
+// everiPay return
+{"func":"everiPay","timestamp":1534216223,"arga":"1","argn":"100000"}
+// everiPass return
+{"func":"everiPass","timestamp":1534216223,"arga":"domain name","argn":"token name"}
+```
+
+#### evt_everiPay
+```
+var abi = {
+    link:"0UKDR:WV4KRJQ/42B860L$UYH:/75JKD4A2-K/*ZDFY*+A-2E_QSGGWZHGH1XK2//M:V84S$/82BFX+U8WZKI88KUP9UYB3IJK4OMQ2X:ZO:CMWCA3WAV8*C5TOY7ZR42Z2:8QWHQ*3N8-J27J",
+    payee:"EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Yg7GpyKzM8EX244P5Rb", 
+    number:"0.00100 S#1", payee:"EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Yg7GpyKzM8EX244P5Rb"
+}
+evt_everiPay("abcd1234", abi)
+```
+
+#### evt_everiPass
+```
+evt_everiPass("abcd1234", {link:"0L4*EOE+62QWTNEZH3YTOQTJ5NEPU5G*IYX33-/C-H:BB7_P-LYB*HA90J+B+3Z/SPA4TARHA*T6RUS4$/EKQ4O8MJ:NPH9M**W1/ENB+FG*IVVUKY*F72S1*F9SM09T3Y5IUW7ZI1IR-6Z"})
+```
+
+#### everiPay/everiPass check result
+
 ## ETH 功能接口
 
 ### 设置节点

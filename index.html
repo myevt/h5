@@ -418,6 +418,52 @@
         EVT.EvtLink.getUniqueLinkId().then(function(result){BNMessage("evtGetUniqueLinkId", null, result)}).catch(function(err){BNMessage("evtGetUniqueLinkId", err)})
       }
 
+      // the info from evtLink
+      function evtGetEvtLinkAction(linkText) {
+        EVT.EvtLink.parseEvtLink(linkText).then(function(result){
+            if ((result.flag & 1) !== 1) {
+              return BNMessage("evtGetEvtLinkAction", "protocol version 1 (required)")
+            }
+            var action = {func: "", timestamp: 0, arg1: "", arg2: ""}
+            for (var i = 0; i < result.segments.length; i++) {
+              switch (result.segments[i].typeKey) {
+                case 42:
+                  action.timestamp = result.segments[i].value
+                  break;
+                case 44:
+                case 91:
+                  action.arg1 = result.segments[i].value + ""
+                  break;
+                case 43:
+                case 92:
+                  action.arg2 = result.segments[i].value + ""
+                  break;
+              }
+              
+            }
+            if ((result.flag & 2) === 2) { // everiPass
+              action.func = "everiPass"
+            }
+
+            if ((result.flag & 4) === 4) { // everiPay
+              action.func = "everiPay"
+            }
+            
+            BNMessage("evtGetEvtLinkAction", null, action)
+          }).catch(function(err){BNMessage("evtGetEvtLinkAction", err)})
+      }
+
+      // everiPay
+      function evt_everiPay(password, abi) {
+        passport.setPwd(password)
+        _evtPushTransaction("evt_everiPay", [new EVT.EvtAction("everipay", abi, '.fungible', parseInt(abi.number.split(" S#")[1]))])
+      }
+
+      // everiPass
+      function evt_everiPass(password, abi) {
+        passport.setPwd(password)
+        _evtPushTransaction("evt_everiPass", [new EVT.EvtAction("everipass", abi)])
+      }
 
       function BNMessage(target, error, result){
         passport.setPwd("")
@@ -731,7 +777,7 @@
         apiCaller.getActions({domain: domain, key: name, skip: skip || 0, take: take || 10, names:["transfer"]})
           .then(function(result){
             var list = []
-            for (let i = 0; i < result.length; i++) {
+            for (var i = 0; i < result.length; i++) {
               list.push({
                 createdAt: result[i].created_at,
                 to: result[i].data.to,
