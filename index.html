@@ -418,11 +418,16 @@
         EVT.EvtLink.getUniqueLinkId().then(function(result){BNMessage("evtGetUniqueLinkId", null, result)}).catch(function(err){BNMessage("evtGetUniqueLinkId", err)})
       }
 
-      // the info from evtLink
-      function evtGetEvtLinkAction(linkText) {
-        EVT.EvtLink.parseEvtLink(linkText).then(function(result){
+      // QrCode Action
+      function getQrCodeAction(qrText) {
+        try {
+            var action = JSON.parse(qrText)
+            return BNMessage("getQrCodeAction", null, action)
+        } catch (error) {}
+
+        EVT.EvtLink.parseEvtLink(qrText).then(function(result){
             if ((result.flag & 1) !== 1) {
-              return BNMessage("evtGetEvtLinkAction", "protocol version 1 (required)")
+              return BNMessage("getQrCodeAction", "evtLink protocol version 1 (required)")
             }
             var action = {func: "", timestamp: 0, arg1: "", arg2: ""}
             for (var i = 0; i < result.segments.length; i++) {
@@ -438,6 +443,9 @@
                 case 92:
                   action.arg2 = result.segments[i].value + ""
                   break;
+                case 95:
+                  action.arg1 = result.segments[i].value
+                  break;
               }
               
             }
@@ -448,9 +456,13 @@
             if ((result.flag & 4) === 4) { // everiPay
               action.func = "everiPay"
             }
+
+            if ((result.flag & 16) === 16) { // payeecode
+              action.func = "payeecode"
+            }
             
-            BNMessage("evtGetEvtLinkAction", null, action)
-          }).catch(function(err){BNMessage("evtGetEvtLinkAction", err)})
+            BNMessage("getQrCodeAction", null, action)
+          }).catch(function(err){BNMessage("getQrCodeAction", err)})
       }
 
       // everiPay
@@ -491,6 +503,18 @@
       function BNOK(target)
       {
         BNMessage(target, null, "OK");
+      }
+
+      /**
+       * get evtLink (payeecode)
+       * @param  string evtpublic EVT address
+       */
+      function evt_PayeeCode(evtpublic) {
+        EVT.EvtLink.getEvtLinkForPayeeCode({address:evtpublic}).then(
+          function(result){BNMessage("evt_PayeeCode", null, result)}
+        ).catch(
+          function(err){BNMessage("evt_PayeeCode", err)}
+        )
       }
 
       /**

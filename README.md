@@ -315,9 +315,9 @@ evtLink("everiPay", {
 
 ### everiPass & everiPay scan QrCode
 
-#### evtGetEvtLinkAction
+#### getQrCodeAction
 ```
-// everiPay/everiPass QrCode link string
+// everiPay/everiPass/payeecode QrCode link string
 var linkText="0UKDR:WEEHI-67JCZC0326W0O1DRQ$$DW:P*P*MH53USKIS2F_QUM0N-JZOSB+YHN1AB4HRJNATYB1AJ2Q$Z7TV6JW:E$S-1V167JKLF71TUOE:QR*$0O43FN8:XYLFZFUL5LH2HWND4XMHN/V"
 evtGetEvtLinkAction(linkText)
 
@@ -325,6 +325,11 @@ evtGetEvtLinkAction(linkText)
 {"func":"everiPay","timestamp":1534216223,"arg1":"1","arg2":"100000"}
 // everiPass return
 {"func":"everiPass","timestamp":1534216223,"arg1":"domain name","arg2":"token name"}
+// payeecode return
+{"func":"payeecode","timestamp":0,"arg1":"EVT85QEkmFpnDwR4NjnYenqenyCxFRQc45HwjGLNpXQQ1JuSmBzSj","arg2":""}
+
+// json string QrCode
+{"func":"eth_address","timestamp":0,"arg1":"0x627306090abaB3A6e1400e9345bC60c78a8BEf57","arg2":"ETH"}
 ```
 
 #### evt_everiPay
