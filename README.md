@@ -321,6 +321,9 @@ evtLink("everiPay", {
 var linkText="0UKDR:WEEHI-67JCZC0326W0O1DRQ$$DW:P*P*MH53USKIS2F_QUM0N-JZOSB+YHN1AB4HRJNATYB1AJ2Q$Z7TV6JW:E$S-1V167JKLF71TUOE:QR*$0O43FN8:XYLFZFUL5LH2HWND4XMHN/V"
 evtGetEvtLinkAction(linkText)
 
+// get payeecode
+evt_payeeCode("EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Yg7GpyKzM8EX244P5Rb")
+
 // everiPay return
 {"func":"everiPay","timestamp":1534216223,"arg1":"1","arg2":"100000"}
 // everiPass return

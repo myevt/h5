@@ -509,7 +509,7 @@
        * get evtLink (payeecode)
        * @param  string evtpublic EVT address
        */
-      function evt_PayeeCode(evtpublic) {
+      function evt_payeeCode(evtpublic) {
         EVT.EvtLink.getEvtLinkForPayeeCode({address:evtpublic}).then(
           function(result){BNMessage("evt_PayeeCode", null, result)}
         ).catch(
