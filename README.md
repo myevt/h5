@@ -311,9 +311,9 @@ var linkText="0UKDR:WEEHI-67JCZC0326W0O1DRQ$$DW:P*P*MH53USKIS2F_QUM0N-JZOSB+YHN1
 evtGetEvtLinkAction(linkText)
 
 // everiPay return
-{"func":"everiPay","timestamp":1534216223,"arga":"1","argn":"100000"}
+{"func":"everiPay","timestamp":1534216223,"arg1":"1","arg2":"100000"}
 // everiPass return
-{"func":"everiPass","timestamp":1534216223,"arga":"domain name","argn":"token name"}
+{"func":"everiPass","timestamp":1534216223,"arg1":"domain name","arg2":"token name"}
 ```
 
 #### evt_everiPay
