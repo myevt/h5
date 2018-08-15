@@ -377,8 +377,8 @@ eth_tokenBalance("0x627306090abaB3A6e1400e9345bC60c78a8BEf57", ["0x345cA3e014Aaf
 var txParams = {
     from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
     to: "0xf17f52151EbEF6C7334FAD080c5704D77216b732", 
-    value: 1 * 1.0e18, 
-    gasPrice: 10000000, 
+    value: "1000000000000000000", // = 1 ETH 
+    gasPrice: "18000000000", // wei
     gas: 50000
 }
 eth_sendTransaction("abcd1234", txParams)
@@ -400,17 +400,16 @@ var args = ["0x627306090abaB3A6e1400e9345bC60c78a8BEf57"]
 # txParams 交易对象
 var txParams = {
     from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
-    to: "0xf17f52151EbEF6C7334FAD080c5704D77216b732", 
-    value: 0, 
-    gasPrice: 10000000, 
+    value: "0", 
+    gasPrice: "10000000", 
     gas: 50000
 }
 
-# 调用合约 transfer 方法
+# 调用合约 transfer 方法 
 eth_contractCall(
-    {address:"0x345cA3e014Aaf5dcA488057592ee47305D9B3e10",method:"transfer"},
-    ["0xf17f52151EbEF6C7334FAD080c5704D77216b732", 100], 
-    {from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57", gasPrice: 10000000, gas:4541592}
+    {address:"0x345cA3e014Aaf5dcA488057592ee47305D9B3e10", method:"transfer", password: "abcd1234"},
+    ["0xf17f52151EbEF6C7334FAD080c5704D77216b732", "100"], 
+    {from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57", gasPrice: "10000000", gas:50000}
 )
 
 return txHash

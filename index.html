@@ -1020,7 +1020,7 @@
 
       /**
        * ERC20 calls
-       * @param  object  where    eg. {address: 'token address', method: "contract method", password:"if use"}
+       * @param  object  where    eg. {address: 'ERC20 address', method: "contract method", password:"if use"}
        * @param  array   args     the contract method inputs
        * @param  object  txParams the eth transaction object
        * @return {[type]}               [description]
@@ -1028,6 +1028,10 @@
       function eth_contractCall(where, args, txParams) {
         if (typeof args === "string") {
           args = [args]
+        }
+
+        if (where.method === "transfer") {
+          args[1] = parseFloat(args[1])
         }
 
         if (typeof txParams === "object") {
@@ -1061,6 +1065,9 @@
         Object.keys(tx).forEach(function(key){
           _tx[key] = tx[key]
         })
+        _tx.value = parseFloat(_tx.value)
+        _tx.gasPrice = parseFloat(_tx.gasPrice)
+        _tx.gas = parseFloat(_tx.gas)
         return tx
       }
       
