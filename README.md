@@ -414,3 +414,27 @@ eth_contractCall(
 
 return txHash
 ```
+
+### eth_getTransaction(trx_id)
+```
+
+# result
+{
+    hash:"0x528c68307df8baf6409d487a0f3decc5eb106356b2db02811e3b8775968da1e0",
+    nonce:4,
+    blockHash:"0x457588687a09656a3ec2f43ca8923ea695532b677e1b732057c5c747583eedfb",
+    blockNumber:5,
+    transactionIndex:0,
+    from:"0x627306090abab3a6e1400e9345bc60c78a8bef57",
+    to:"0xf17f52151ebef6c7334fad080c5704d77216b732",
+    value:"1000000000000000000",
+    gas:50000,
+    gasPrice:"18000000000",
+    input:"0x0"
+}
+```
+
+### eth_getTransactionReceipt(trx_id)
+```
+# result 0|1
+```

@@ -1055,6 +1055,24 @@
         contract[where.method].apply(this, args)
       }
 
+      function eth_getTransaction(trx_id) {
+        var trx = web3.eth.getTransaction(trx_id)
+        if (trx) {
+          BNMessage("eth_getTransaction", null, trx)
+        } else {
+          BNMessage("eth_getTransaction", "Not found")
+        }
+      }
+
+      function eth_getTransactionReceipt(trx_id) {
+        var trx = web3.eth.getTransactionReceipt(trx_id)
+        var status = 0
+        if (trx && trx.status) {
+          status = web3.toDecimal(trx.status)
+        }
+        BNMessage("eth_getTransaction", null, status)
+      }
+
       function _eth_txParams(tx) {
         var _tx = Object.create({
           from: wallets.eth.getAddresses()[0],
