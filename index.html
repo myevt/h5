@@ -440,6 +440,7 @@
                   action.arg1 = result.segments[i].value + ""
                   break;
                 case 43:
+                case 45:
                 case 92:
                   action.arg2 = result.segments[i].value + ""
                   break;
@@ -508,12 +509,13 @@
       /**
        * get evtLink (payeecode)
        * @param  string evtpublic EVT address
+       * @param  integer fungibleId
        */
-      function evt_payeeCode(evtpublic) {
-        EVT.EvtLink.getEvtLinkForPayeeCode({address:evtpublic}).then(
-          function(result){BNMessage("evt_PayeeCode", null, result)}
+      function evt_payeeCode(evtpublic, fungibleId) {
+        EVT.EvtLink.getEvtLinkForPayeeCode({address: evtpublic, fungibleId: fungibleId || 0}).then(
+          function(result){BNMessage("evt_payeeCode", null, result)}
         ).catch(
-          function(err){BNMessage("evt_PayeeCode", err)}
+          function(err){BNMessage("evt_payeeCode", err)}
         )
       }
 
@@ -589,6 +591,23 @@
         apiCaller.getFungibleSymbolDetail(symbol).then(function(result){BNMessage("evt_getFungibleSymbolDetail", null, result)}).catch(function(err){BNMessage("evt_getFungibleSymbolDetail", err)})
       }
 
+      /**
+       * get Created Fungibles
+       * @param  string publicKey
+       * @return {[type]}
+       */
+      function evt_getCreatedFungibles(publicKey) {
+        apiCaller.getCreatedFungibles(publicKey).then(function(result){BNMessage("evt_getCreatedFungibles", null, result)}).catch(function(err){BNMessage("evt_getCreatedFungibles", err)})
+      }
+
+      /**
+       * getTransactionIdForLinkId
+       * @param  string linkId
+       * @return {[type]}
+       */
+      function evt_getTransactionIdForLinkId(linkId) {
+        apiCaller.getTransactionIdForLinkId(linkId).then(function(result){BNMessage("evt_getTransactionIdForLinkId", null, result)}).catch(function(err){BNMessage("evt_getTransactionIdForLinkId", err)})
+      }
       
       /**
        * getGroupDetail

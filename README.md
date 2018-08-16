@@ -105,6 +105,11 @@ get Fungible Symbol Detail
 evt_getFungibleSymbolDetail(1)
 ```
 
+get my created fungibles
+```
+evt_getCreatedFungibles(publicKey)
+```
+
 ### evt_addmeta(password, abi, domain, [key])
 
 ```
@@ -311,6 +316,9 @@ evtLink("everiPay", {
     symbol: 1,
     maxAmount: 100000}
 )
+
+# evt_getTransactionIdForLinkId(linkId)
+
 ```
 
 ### everiPass & everiPay scan QrCode
@@ -322,7 +330,7 @@ var linkText="0UKDR:WEEHI-67JCZC0326W0O1DRQ$$DW:P*P*MH53USKIS2F_QUM0N-JZOSB+YHN1
 evtGetEvtLinkAction(linkText)
 
 // get payeecode
-evt_payeeCode("EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Yg7GpyKzM8EX244P5Rb")
+evt_payeeCode("EVT6x6a9HXGxLuSJfjfrGwikA8zswAe6z2Yg7GpyKzM8EX244P5Rb", 1)
 
 // everiPay return
 {"func":"everiPay","timestamp":1534216223,"arg1":"1","arg2":"100000"}
