@@ -54,7 +54,7 @@ OR BEING SCANNED BY CORRECT SCANNERS
 NEVER SHOW IT TO ANY OTHER PEOPLE</pre>
         <script>
             function evtLink(qrType, qrParams, imgPrams) {
-                imgPrams = imgPrams || {autoReload: false}
+                imgPrams = imgPrams || {autoReload: true}
                 setInfo(qrType, qrParams)
                 try {
                     EVT.EvtLink.getEVTLinkQrImage(qrType, qrParams, imgPrams, 
