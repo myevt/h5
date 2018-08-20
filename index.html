@@ -639,6 +639,12 @@
         apiCaller.getTransactionDetailById(txId).then(function(result){BNMessage("evt_getTransactionDetailById", null, result)}).catch(function(err){BNMessage("evt_getTransactionDetailById", err)})
       }
 
+      function evt_getTransactionNumberById(txId) {
+        apiCaller.getTransactionDetailById(txId).then(function(result){
+          BNMessage("evt_getTransactionDetailById", null, result.transaction.actions[0].data.number)}
+        ).catch(function(err){BNMessage("evt_getTransactionDetailById", err)})
+      }
+
       /**
        * evt_evt2pevt
        * @param  string password
