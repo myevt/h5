@@ -613,7 +613,7 @@
        * @return {[type]}
        */
       function evt_getTransactionIdForLinkId(linkId) {
-        apiCaller.getTransactionIdForLinkId(linkId).then(function(result){BNMessage("evt_getTransactionIdForLinkId", null, result)}).catch(function(err){BNMessage("evt_getTransactionIdForLinkId", err)})
+        apiCaller.getTransactionIdForLinkId(linkId).then(function(result){BNMessage("evt_getTransactionIdForLinkId", null, result.trx_id)}).catch(function(err){BNMessage("evt_getTransactionIdForLinkId", err)})
       }
       
       /**
@@ -632,6 +632,11 @@
        */
       function evt_getDomainDetail(domain) {
         apiCaller.getDomainDetail(domain).then(function(result){BNMessage("evt_getDomainDetail", null, result)}).catch(function(err){BNMessage("evt_getDomainDetail", err)})
+      }
+
+      // get TransactionDetailById
+      function evt_getTransactionDetailById(txId) {
+        apiCaller.getTransactionDetailById(txId).then(function(result){BNMessage("evt_getTransactionDetailById", null, result)}).catch(function(err){BNMessage("evt_getTransactionDetailById", err)})
       }
 
       /**
