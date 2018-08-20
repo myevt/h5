@@ -486,11 +486,17 @@
         }
         var data = {}
         if (error) {
+          var errorCode = 1
           if (typeof error === "object") {
             console.log(error)
-            error = error.message
+            if (error.isServerError) {
+              errorCode = error.serverError.code
+              error = error.serverError.what
+            } else {
+              error = error.message
+            }
           }
-          data = {target: target, error:1, errorMessage: error}
+          data = {target: target, error: errorCode, errorMessage: error}
         } else {
           data = {target: target, error:0, data: result}
         }
