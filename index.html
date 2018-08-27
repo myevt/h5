@@ -422,6 +422,21 @@
         EVT.EvtLink.getUniqueLinkId().then(function(result){BNMessage("evtGetUniqueLinkId", null, result)}).catch(function(err){BNMessage("evtGetUniqueLinkId", err)})
       }
 
+      function evtLink(qrType, qrParams, imgPrams) {
+        imgPrams = {autoReload: false}
+        try {
+          EVT.EvtLink.getEVTLinkQrImage(qrType, qrParams, imgPrams, 
+              function(err, res) {
+                if (err) {
+                  return BNMessage("evtLink", err)
+                }
+                BNMessage("evtLink", null, res.dataUrl)
+          });
+        } catch(e) {
+          BNMessage("evtLink", e)
+        }
+      }
+
       // QrCode Action
       function getQrCodeAction(qrText) {
         try {
