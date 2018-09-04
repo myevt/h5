@@ -9,6 +9,7 @@
     <script type="text/javascript" src="js/myWallet.min.js"></script>
     <script type="text/javascript" src="js/web3.js"></script>
     <script type="text/javascript" src="js/hooked-web3-provider.js"></script>
+    <script type="text/javascript" src="js/eos.min.js"></script>
     <script type="text/javascript">
       var passport = (function(){
         var passwordProvider = function() {}
@@ -153,7 +154,8 @@
       // myWallet.HDkey.generateMnemonic() 助记词
       // web3.eth.sendTransaction({from: '627306090abab3a6e1400e9345bc60c78a8bef57', to: "f17f52151ebef6c7334fad080c5704d77216b732", value: 10*1.0e18, gasPrice: 18000000000, gas: 50000},(err, txid)=>console.log(err,txid))
       var web3 = new Web3();
-      var apiCaller = EVT();
+      var apiCaller = {};
+      var eos = {};
       var wallets = {};
       // 需要用到密码钱先设置用户密码 passport.setPwd('password')
       /**
@@ -417,6 +419,38 @@
         BNOK("setEvtProvider")
       }
 
+      /**
+       * set EOS provider 
+       * 
+       * @param string chainId
+       * @param string httpEndpoint
+       */
+      function setEosProvider(chainId, httpEndpoint) {
+        if (wallets.eos === undefined) {
+          return BNMessage("setEosProvider", "Please initHDkey first!");
+        }
+
+        eosConfig = {
+          chainId: chainId,
+          httpEndpoint: httpEndpoint,
+          verbose: true,
+          keyProvider: function(transaction) {
+            var password = passport.getPwd();
+            return new Promise(function(resolve, reject){
+              var ks = wallets.eos
+              ks.keyFromPassword(password,function(err,pw){
+                if (err || !ks.isDerivedKeyCorrect(pw)) {
+                  reject("Password error")
+                } else {
+                  var key = ks.exportPrivateKey(ks.getAddresses()[0], pw)
+                  resolve(key)
+                }
+              })
+            })
+          }
+        }
+        eos = Eos(eosConfig)
+      }
 
       function evtGetUniqueLinkId() {
         EVT.EvtLink.getUniqueLinkId().then(function(result){BNMessage("evtGetUniqueLinkId", null, result)}).catch(function(err){BNMessage("evtGetUniqueLinkId", err)})
@@ -1008,6 +1042,28 @@
         } catch (error) {
           BNMessage(target, error)
         }
+      }
+
+      /**
+       * eos transfer
+       * @param  string password
+       * @param  objcet abi      {"from": publicKey,"to": publicKey2,"number": "10.00 YYA","memo": "memo"}
+       */
+      function eos_transfer(password, tx) {
+        passport.setPwd(password)
+        eos.transfer(tx.from, tx.to, tx.number, tx.memo).then(function(result){BNMessage("eos_transfer", null, result.transaction_id)}).catch(function(err){BNMessage("eos_transfer", err)})
+      }
+
+      function eos_getCurrencyBalance(account, symbol) {
+        eos.getCurrencyBalance("eosio.token", account, symbol || null).then(function(result){BNMessage("eos_getCurrencyBalance", null, result)}).catch(function(err){BNMessage("eos_getCurrencyBalance", err)})
+      }
+
+      function eos_getKeyAccounts(publicKey) {
+        eos.getKeyAccounts(publicKey).then(function(result){BNMessage("eos_getKeyAccounts", null, result.account_names)}).catch(function(err){BNMessage("eos_getKeyAccounts", err)})
+      }
+
+      function eos_getAccount(account) {
+        eos.getAccount(account).then(function(result){BNMessage("eos_getAccount", null, result)}).catch(function(err){BNMessage("eos_getAccount", err)})
       }
 
       function getEthERC20ABI() {
