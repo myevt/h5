@@ -443,7 +443,7 @@
                   reject("Password error")
                 } else {
                   var key = ks.exportPrivateKey(ks.getAddresses()[0], pw)
-                  resolve(key)
+                  resolve([key])
                 }
               })
             })
@@ -830,6 +830,20 @@
           return BNMessage("evt_transferft", "asset error")
         }
         _evtPushTransaction("evt_transferft", [new EVT.EvtAction("transferft", abi,".fungible", info[2])])
+      }
+
+      function evt_multiTransferft(password, abis) {
+        passport.setPwd(password)
+        var info = _parseAsset(abis[0].number)
+        if (!info) {
+          return BNMessage("evt_multiTransferft", "asset error")
+        }
+
+        var acts = [];
+        abis.forEach(function(abi){
+          acts.push(new EVT.EvtAction("transferft", abi,".fungible", info[2]))
+        })
+        _evtPushTransaction("evt_multiTransferft", acts)
       }
 
       /**
