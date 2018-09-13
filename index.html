@@ -1063,13 +1063,33 @@
        * @param  string password
        * @param  objcet abi      {"from": publicKey,"to": publicKey2,"number": "10.00 YYA","memo": "memo"}
        */
-      function eos_transfer(password, tx) {
+      function eos_transfer(password, tx, contract) {
         passport.setPwd(password)
-        eos.transfer(tx.from, tx.to, tx.number, tx.memo).then(function(result){BNMessage("eos_transfer", null, result.transaction_id)}).catch(function(err){BNMessage("eos_transfer", err)})
+        contract = contract || 'eosio.token'
+
+        var p = {}
+        if (contract === 'eosio.token') {
+          p = eos.transfer(tx.from, tx.to, tx.number, tx.memo)
+        } else {
+          eos.transaction({
+            actions:[
+              {
+                account: contract,
+                name: 'transfer',
+                authorization: [{
+                  actor: tx.from,
+                  permission: 'active'
+                }],
+                data: { from: tx.from, to: tx.to, quantity: tx.number, memo: tx.memo }
+              }
+            ]
+          })
+        }
+        p.then(function(result){BNMessage("eos_transfer", null, result.transaction_id)}).catch(function(err){BNMessage("eos_transfer", err)})
       }
 
-      function eos_getCurrencyBalance(account, symbol) {
-        eos.getCurrencyBalance("eosio.token", account, symbol || null).then(function(result){BNMessage("eos_getCurrencyBalance", null, result)}).catch(function(err){BNMessage("eos_getCurrencyBalance", err)})
+      function eos_getCurrencyBalance(code, account, symbol) {
+        eos.getCurrencyBalance(code, account, symbol || null).then(function(result){BNMessage("eos_getCurrencyBalance", null, result)}).catch(function(err){BNMessage("eos_getCurrencyBalance", err)})
       }
 
       function eos_getKeyAccounts(publicKey) {
