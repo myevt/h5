@@ -1088,16 +1088,71 @@
         p.then(function(result){BNMessage("eos_transfer", null, result.transaction_id)}).catch(function(err){BNMessage("eos_transfer", err)})
       }
 
+      /**
+       * eos getCurrencyBalance
+       * @param  string code     contract account
+       * @param  string account  EOS account name
+       * @param  string symbol
+       */
       function eos_getCurrencyBalance(code, account, symbol) {
         eos.getCurrencyBalance(code, account, symbol || null).then(function(result){BNMessage("eos_getCurrencyBalance", null, result)}).catch(function(err){BNMessage("eos_getCurrencyBalance", err)})
       }
 
+      /**
+       * eos get accounts by publickey
+       * @param  string publicKey  EOS publie key
+       */
       function eos_getKeyAccounts(publicKey) {
         eos.getKeyAccounts(publicKey).then(function(result){BNMessage("eos_getKeyAccounts", null, result.account_names)}).catch(function(err){BNMessage("eos_getKeyAccounts", err)})
       }
 
+      /**
+       * eos get accounts info
+       * @param  string account  EOS account name
+       */
       function eos_getAccount(account) {
         eos.getAccount(account).then(function(result){BNMessage("eos_getAccount", null, result)}).catch(function(err){BNMessage("eos_getAccount", err)})
+      }
+
+      /**
+       * eos buy RAM
+       * @param  string payer
+       * @param  string receiver
+       * @param  string quant    asset type eg. "1.0000 EOS"
+       */
+      function eos_buyram(payer, receiver, quant) {
+        eos.buyram(payer, receiver, quant).then(function(result){BNMessage("eos_buyram", null, result.transaction_id)}).catch(function(err){BNMessage("eos_buyram", err)})
+      }
+
+      /**
+       * eos sell RAM
+       * @param  string  account
+       * @param  integer bytes    RAM size
+       */
+      function eos_sellram(account, bytes) {
+        eos.sellram(payer, receiver, quant).then(function(result){BNMessage("eos_sellram", null, result.transaction_id)}).catch(function(err){BNMessage("eos_sellram", err)})
+      }
+
+      /**
+       * eos delegate Net&CPU
+       * @param  string from
+       * @param  string receiver
+       * @param  string stakeNet asset type eg. "0.0000 EOS"
+       * @param  string stakeCpu asset type eg. "1.0000 EOS"
+       */
+      function eos_delegatebw(from, receiver, stakeNet, stakeCpu) {
+        eos.delegatebw(from, receiver, stakeNet, stakeCpu, 0).then(function(result){BNMessage("eos_delegatebw", null, result.transaction_id)}).catch(function(err){BNMessage("eos_delegatebw", err)})
+      }
+
+      /**
+       * eos undelegate Net&CPU
+       * @param  string from
+       * @param  string receiver
+       * @param  string stakeNet asset type eg. "0.0000 EOS"
+       * @param  string stakeCpu asset type eg. "1.0000 EOS"
+       */
+       function eos_undelegatebw(from, receiver, stakeNet, stakeCpu) {
+        eos.undelegatebw(from, receiver, stakeNet, stakeCpu).then(function(result){BNMessage("eos_undelegatebw", null, result.transaction_id)}).catch(function(err){BNMessage("eos_undelegatebw", err)})
       }
 
       function getEthERC20ABI() {
