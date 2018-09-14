@@ -1116,20 +1116,24 @@
 
       /**
        * eos buy RAM
+       * @param  string password
        * @param  string payer
        * @param  string receiver
        * @param  string quant    asset type eg. "1.0000 EOS"
        */
-      function eos_buyram(payer, receiver, quant) {
+      function eos_buyram(password, payer, receiver, quant) {
+        passport.setPwd(password)
         eos.buyram(payer, receiver, quant).then(function(result){BNMessage("eos_buyram", null, result.transaction_id)}).catch(function(err){BNMessage("eos_buyram", err)})
       }
 
       /**
        * eos sell RAM
+       * @param  string password
        * @param  string  account
        * @param  integer bytes    RAM size
        */
-      function eos_sellram(account, bytes) {
+      function eos_sellram(password, account, bytes) {
+        passport.setPwd(password)
         eos.sellram(payer, receiver, quant).then(function(result){BNMessage("eos_sellram", null, result.transaction_id)}).catch(function(err){BNMessage("eos_sellram", err)})
       }
 
@@ -1140,7 +1144,8 @@
        * @param  string stakeNet asset type eg. "0.0000 EOS"
        * @param  string stakeCpu asset type eg. "1.0000 EOS"
        */
-      function eos_delegatebw(from, receiver, stakeNet, stakeCpu) {
+      function eos_delegatebw(password, from, receiver, stakeNet, stakeCpu) {
+        passport.setPwd(password)
         eos.delegatebw(from, receiver, stakeNet, stakeCpu, 0).then(function(result){BNMessage("eos_delegatebw", null, result.transaction_id)}).catch(function(err){BNMessage("eos_delegatebw", err)})
       }
 
@@ -1151,7 +1156,8 @@
        * @param  string stakeNet asset type eg. "0.0000 EOS"
        * @param  string stakeCpu asset type eg. "1.0000 EOS"
        */
-       function eos_undelegatebw(from, receiver, stakeNet, stakeCpu) {
+      function eos_undelegatebw(password, from, receiver, stakeNet, stakeCpu) {
+        passport.setPwd(password)
         eos.undelegatebw(from, receiver, stakeNet, stakeCpu).then(function(result){BNMessage("eos_undelegatebw", null, result.transaction_id)}).catch(function(err){BNMessage("eos_undelegatebw", err)})
       }
 
