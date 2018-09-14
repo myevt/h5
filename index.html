@@ -1192,8 +1192,15 @@
                   case "eosio::delegatebw":
                     item.from = action.action_trace.act.data.from
                     item.to = action.action_trace.act.data.receiver
-                    item.quantity = action.action_trace.inline_traces[0].act.data.quantity
-                    item.memo = action.action_trace.inline_traces[0].act.data.memo
+                    if (action.action_trace.inline_traces.length) {
+                      item.quantity = action.action_trace.inline_traces[0].act.data.quantity
+                    } else {
+                      if ('0.0000 EOS' == action.action_trace.act.data.stake_cpu_quantity) {
+                        item.quantity = action.action_trace.act.data.stake_net_quantity
+                      } else {
+                        item.quantity = action.action_trace.act.data.stake_cpu_quantity
+                      }
+                    }
                     lists.acts.push(item)
                     break;
                 
