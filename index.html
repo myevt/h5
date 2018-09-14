@@ -1134,7 +1134,7 @@
        */
       function eos_sellram(password, account, bytes) {
         passport.setPwd(password)
-        eos.sellram(payer, receiver, quant).then(function(result){BNMessage("eos_sellram", null, result.transaction_id)}).catch(function(err){BNMessage("eos_sellram", err)})
+        eos.sellram(account, bytes).then(function(result){BNMessage("eos_sellram", null, result.transaction_id)}).catch(function(err){BNMessage("eos_sellram", err)})
       }
 
       /**
@@ -1159,6 +1159,75 @@
       function eos_undelegatebw(password, from, receiver, stakeNet, stakeCpu) {
         passport.setPwd(password)
         eos.undelegatebw(from, receiver, stakeNet, stakeCpu).then(function(result){BNMessage("eos_undelegatebw", null, result.transaction_id)}).catch(function(err){BNMessage("eos_undelegatebw", err)})
+      }
+
+      /**
+       * eos get eos Formated actions
+       * @param  string  account
+       * @param  integer pos
+       * @param  integer offset
+       */
+      function eos_getActions(account, pos, offset) {
+        eos.getActions(account, pos, offset).then(function(result){
+          var lists = {acts:[], last_irreversible_block:result.last_irreversible_block, range:[-1, -1]}
+          var trxId = '', len = result.actions.length
+          for (var i = 0; i < len; i++) {
+            if (i == 0) {
+              lists.range[0] = result.actions[0].account_action_seq
+              lists.range[1] = result.actions[len-1].account_action_seq
+            }
+            var action = result.actions[i]
+            if (trxId !== action.action_trace.trx_id) {
+              trxId = action.action_trace.trx_id
+              var item = createEosItem(action, action.action_trace.act)
+
+              if ('transfer' == action.action_trace.act.name) {
+                lists.acts.push(item)
+              } else {
+                switch (item.act) {
+                  case "eosio::buyram":
+                      lists.acts.push(createEosItem(action, action.action_trace.inline_traces[0].act))
+                      lists.acts.push(createEosItem(action, action.action_trace.inline_traces[1].act))
+                    break;
+                  case "eosio::delegatebw":
+                    item.from = action.action_trace.act.data.from
+                    item.to = action.action_trace.act.data.receiver
+                    item.quantity = action.action_trace.inline_traces[0].act.data.quantity
+                    item.memo = action.action_trace.inline_traces[0].act.data.memo
+                    lists.acts.push(item)
+                    break;
+                
+                  default:
+                    break;
+                }
+              }
+            }
+          }
+
+          BNMessage("eos_getActions", null, lists)
+        }).catch(function(err){BNMessage("eos_getActions", err)})
+      }
+
+      function createEosItem(action, act) {
+        var item = {
+          seq: action.account_action_seq,
+          dateTime: action.block_time,
+          block: action.block_num,
+          act: action.action_trace.act.account+'::'+action.action_trace.act.name,
+          from: '',
+          to: '',
+          quantity: '',
+          memo: ''
+        }
+
+        if ('transfer' == action.action_trace.act.name || 'eosio::buyram' == item.act) {
+          item.from = act.data.from
+          item.to = act.data.to
+          item.quantity = act.data.quantity
+          item.memo = act.data.memo
+        }
+
+        return item
       }
 
       function getEthERC20ABI() {
