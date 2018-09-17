@@ -1163,21 +1163,23 @@
 
       /**
        * eos get eos Formated actions
+       * @param  string  lastTrxId 
        * @param  string  account
        * @param  integer pos
        * @param  integer offset
        */
-      function eos_getActions(account, pos, offset) {
+      function eos_getActions(lastTrxId, account, pos, offset) {
         eos.getActions(account, pos, offset).then(function(result){
-          var lists = {acts:[], last_irreversible_block:result.last_irreversible_block, range:[-1, -1]}
+          var lists = {acts:[], last_irreversible_block:result.last_irreversible_block, range:[-1, -1], lastTrxId:""}
           var trxId = '', len = result.actions.length
           for (var i = 0; i < len; i++) {
             if (i == 0) {
+              lists.lastTrxId = result.actions[0].action_trace.trx_id
               lists.range[0] = result.actions[0].account_action_seq
               lists.range[1] = result.actions[len-1].account_action_seq
             }
             var action = result.actions[i]
-            if (trxId !== action.action_trace.trx_id) {
+            if (trxId !== action.action_trace.trx_id && lastTrxId !== action.action_trace.trx_id) {
               trxId = action.action_trace.trx_id
               var item = createEosItem(action, action.action_trace.act)
 
@@ -1185,6 +1187,7 @@
                 lists.acts.push(item)
               } else {
                 switch (item.act) {
+                  case "eosio::sellram":
                   case "eosio::buyram":
                       lists.acts.push(createEosItem(action, action.action_trace.inline_traces[0].act))
                       lists.acts.push(createEosItem(action, action.action_trace.inline_traces[1].act))
@@ -1201,10 +1204,35 @@
                         item.quantity = action.action_trace.act.data.stake_cpu_quantity
                       }
                     }
+                    
                     lists.acts.push(item)
+                    break;
+                  case "eosio::undelegatebw":
+                    item.from = action.action_trace.act.data.from
+                    item.to = action.action_trace.act.data.receiver
+                    if (action.action_trace.inline_traces.length) {
+                      item.quantity = action.action_trace.inline_traces[0].act.data.quantity
+                    } else {
+                      if ('0.0000 EOS' == action.action_trace.act.data.unstake_cpu_quantity) {
+                        item.quantity = action.action_trace.act.data.unstake_net_quantity
+                      } else {
+                        item.quantity = action.action_trace.act.data.unstake_cpu_quantity
+                      }
+                    }
+                    
+                    lists.acts.push(item)
+                    break;
+                  case "eosbetdice11::betreceipt":
+                    item.from = "eosbetdice11"
+                    item.to = action.action_trace.act.data.bettor
+                    item.quantity = action.action_trace.act.data.payout
+                    if ("0.0000 EOS" !== item.quantity) {
+                      lists.acts.push(item)
+                    }
                     break;
                 
                   default:
+                    console.log('lost:', action)
                     break;
                 }
               }
@@ -1220,6 +1248,7 @@
           seq: action.account_action_seq,
           dateTime: action.block_time,
           block: action.block_num,
+          trxId: action.action_trace.trx_id,
           act: action.action_trace.act.account+'::'+action.action_trace.act.name,
           from: '',
           to: '',
@@ -1227,7 +1256,7 @@
           memo: ''
         }
 
-        if ('transfer' == action.action_trace.act.name || 'eosio::buyram' == item.act) {
+        if ('transfer' == action.action_trace.act.name || 'eosio::buyram' == item.act || 'eosio::sellram' == item.act) {
           item.from = act.data.from
           item.to = act.data.to
           item.quantity = act.data.quantity
