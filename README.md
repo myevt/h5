@@ -446,3 +446,94 @@ return txHash
 ```
 # result 0|1
 ```
+
+## EOS 功能
+
+### setEosProvider EOS 初始化
+
+```
+var httpEndpoint="https://mainnet.libertyblock.io:7777"
+var chainId = (get httpEndpoint+'/v1/chain/get_info').chain_id
+setEosProvider(chainId, httpEndpoint)
+```
+
+### eos_getKeyAccounts 注册账户查询
+
+```
+eos_getKeyAccounts("EOS8jabd....")
+
+# return
+['account1','account1']
+```
+
+### eos_transfer 转账
+
+```
+var tx = {"from": account,"to": acctount,"number": "10.0000 EOS","memo": "memo"}
+var contract = 'eosio.token'
+eos_transfer('abcd1234', tx, contract)
+```
+
+### eos_getCurrencyBalance 余额查询
+
+```
+eos_getCurrencyBalance('eosio.token', 'dingshikun11', "EOS")
+
+# return
+['1.0000 EOS']
+```
+
+### eos_getAccount 账户资源
+
+```
+eos_getAccount('dingshikun11')
+```
+
+### RAM
+```
+# buy ram of 1.0000 EOS
+eos_buyram('password', 'dingshikun11', 'dingshikun11', '0.0010 EOS')
+
+# sell 1Kb ram
+eos_sellram('password', 'dingshikun11', 1024)
+```
+
+### Net & CPU
+
+```
+var stakeNet = '0.1000 EOS'
+var StakeCpu = '0.0000 EOS'
+eos_delegatebw('password', 'dingshikun11', 'dingshikun11', stakeNet, stakeCpu)
+
+eos_undelegatebw('password', 'dingshikun11', 'dingshikun11', stakeNet, stakeCpu)
+```
+
+### EOS Formated actions query
+```
+# 1st page query the latest list
+eos_getActions('', 'dingshikun11', -1, null)
+
+# result
+{
+    acts:[
+        {
+            seq: 92,
+            dateTime: '2018-09-14T07:47:31.000',
+            block: 16337534,
+            trxId: action.action_trace.trx_id,
+            act: 'eosio.token::transfer',
+            from: 'dingshikun11',
+            to: 'eosio.stake',
+            quantity: '0.0010 EOS',
+            memo: 'stake bandwidth'
+        },...
+    ], 
+    last_irreversible_block: 17163938, 
+    range:[92, 111], 
+    lastTrxId:"db8e9310668b819985e31f39e95254622598c6e15ec8b99c0acffc410521a4a1"
+}
+
+# 2st page
+
+eos_getActions('db8e9310668b819985e31f39e95254622598c6e15ec8b99c0acffc410521a4a1', 'dingshikun11', 72, 19)
+```
