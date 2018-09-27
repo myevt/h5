@@ -545,7 +545,7 @@
           if (typeof error === "object") {
             console.log(error)
             if (error.isServerError) {
-              errorCode = error.serverError.code
+              errorCode = error.serverError.code || 1
               error = error.serverError.what
             } else {
               error = error.message
@@ -1172,7 +1172,7 @@
        */
       function eos_getActions(lastTrxId, account, pos, offset) {
         eos.getActions(account, pos, offset).then(function(result){
-          var lists = {acts:[], last_irreversible_block:result.last_irreversible_block, range:[-1, -1], lastTrxId:""}
+          var lists = {acts:[], last_irreversible_block:result.last_irreversible_block, range:[0, -1], lastTrxId:""}
           var trxId = '', len = result.actions.length
           for (var i = 0; i < len; i++) {
             if (i == 0) {
