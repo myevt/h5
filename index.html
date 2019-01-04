@@ -534,6 +534,14 @@
         _evtPushTransaction("evt_everiPass", [new EVT.EvtAction("everipass", abi)])
       }
 
+      function evt_getStatusOfEvtLink(linkId) {
+        apiCaller.getStatusOfEvtLink({linkId: linkId}).then(
+            function(result){BNMessage("evt_getStatusOfEvtLink", null, result)}
+          ).catch(
+            function(err){BNMessage("evt_getStatusOfEvtLink", err)}
+          )
+      }
+
       function BNMessage(target, error, result){
         passport.setPwd("")
         if (typeof result !== "string") {
@@ -849,6 +857,40 @@
       }
 
       /**
+       * Airdrop 
+       * @param  {string} password [description]
+       * @param  {string} agent    acctount
+       * @param  {string} number   asset 1.00000 S#1
+       * @param  {integer} count    5~100
+       * @param  {string} cost     asset. airdrop cost fee
+       * @return {[type]}          [description]
+       */
+      function evt_airdrop(password, agent, number, count, cost) {
+        passport.setPwd(password)
+        var info = _parseAsset(number)
+        var acts = [];
+        var publicKey = wallets.evt.getAddresses()[0]
+        var abi = {
+          from: publicKey,
+          to: agent,
+          number: number,
+          memo: "Airdrop by MyEVT wallet. Count#"+count
+        }
+        acts.push(new EVT.EvtAction("transferft", abi,".fungible", info[2]))
+
+        abi = {
+          from: publicKey,
+          to: agent,
+          number: cost,
+          memo: "Airdrop cost"
+        }
+        info = _parseAsset(cost)
+        acts.push(new EVT.EvtAction("transferft", abi,".fungible", 1))
+
+        _evtPushTransaction("evt_airdrop", acts)
+      }
+
+      /**
        * Fungible transfer lists
        * @param  int    fungible id
        * @param  string address
@@ -864,7 +906,7 @@
           var list = [],item = {}
           for (var i = 0; i < result.length; i++) {
             item = {
-              createdAt: result[i].timestamp,
+              createdAt: result[i].timestamp.replace(' ', 'T'),
               action: result[i].name,
               to: "",
               from: "",
@@ -920,7 +962,7 @@
             var list = []
             for (var i = 0; i < result.length; i++) {
               list.push({
-                createdAt: result[i].created_at,
+                createdAt: result[i].timestamp.replace(' ', 'T'),
                 to: result[i].data.to,
                 trxId: result[i].trx_id
               })
